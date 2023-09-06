@@ -1,0 +1,37 @@
+<mxfile host="Electron" modified="2023-09-05T11:55:23.685Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.1 Chrome/112.0.5615.87 Electron/24.1.2 Safari/537.36" etag="ZDqK9Q44sD7DDShjSkIz" version="21.2.1" type="device">
+  <diagram name="Flow" id="TKtZzYHBQqUKwiRr64Dy">
+    <mxGraphModel dx="1018" dy="764" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="6cnwfvxVtK9raHIOka_a-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="6cnwfvxVtK9raHIOka_a-1" target="6cnwfvxVtK9raHIOka_a-4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="6cnwfvxVtK9raHIOka_a-1" value="BEGIN" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Fira Code;fontSize=17;" parent="1" vertex="1">
+          <mxGeometry x="290" y="60" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="6cnwfvxVtK9raHIOka_a-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="6cnwfvxVtK9raHIOka_a-4" target="6cnwfvxVtK9raHIOka_a-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="6cnwfvxVtK9raHIOka_a-4" value="Port number and IP range" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontFamily=Fira Code;fontSize=17;" parent="1" vertex="1">
+          <mxGeometry x="240" y="230" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="6cnwfvxVtK9raHIOka_a-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="6cnwfvxVtK9raHIOka_a-6" target="6cnwfvxVtK9raHIOka_a-8" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="6cnwfvxVtK9raHIOka_a-6" value="Find the target PC" style="whiteSpace=wrap;html=1;fontSize=17;fontFamily=Fira Code;" parent="1" vertex="1">
+          <mxGeometry x="225" y="400" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="6cnwfvxVtK9raHIOka_a-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="6cnwfvxVtK9raHIOka_a-8" target="6cnwfvxVtK9raHIOka_a-10" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="6cnwfvxVtK9raHIOka_a-8" value="Connect to the server" style="whiteSpace=wrap;html=1;fontSize=17;fontFamily=Fira Code;" parent="1" vertex="1">
+          <mxGeometry x="227.5" y="540" width="245" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="6cnwfvxVtK9raHIOka_a-10" value="END" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Fira Code;fontSize=17;" parent="1" vertex="1">
+          <mxGeometry x="290" y="680" width="120" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
