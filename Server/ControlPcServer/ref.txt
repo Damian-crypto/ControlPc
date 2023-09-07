@@ -1,0 +1,3 @@
+https://www.sqlitetutorial.net/sqlite-java/create-table/
+
+https://www.baeldung.com/spark-framework-rest-api
