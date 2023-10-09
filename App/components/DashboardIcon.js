@@ -11,6 +11,7 @@ const DashboardIcon = ({
     onTouch,
     width = 100,
     height = 100,
+    borderWidth = 0
     }) => {
 
     return (
@@ -21,6 +22,7 @@ const DashboardIcon = ({
             <View style={[styles.btnStyle, styles.btnArea, {
                 width: width,
                 height: height,
+                borderWidth: borderWidth
             }]}>
                 <TouchableOpacity style={styles.btnArea} onPress={onTouch}>
                     <Image source={icon} />
@@ -44,6 +46,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     btnStyle: {
+        borderColor: '#fff',
         backgroundColor: '#000',
     },
     lblStyle: {

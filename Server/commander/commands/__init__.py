@@ -1,1 +1,1 @@
-__all__ = ['PowerSupplyShutdownCommand', 'PowerSupplySleepCommand']
+# __all__ = ['PowerSupplyShutdownCommand', 'PowerSupplySleepCommand']

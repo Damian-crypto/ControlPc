@@ -10,7 +10,7 @@ class NoCommand(Command):
 class Controller:
 
     def __init__(self):
-        self.__commands = defaultdict(Command)
+        self.__commands = defaultdict(NoCommand)
         self.noCommand = NoCommand()
 
     def setCommand(self, name: str, cmd: Command):

@@ -1,5 +1,5 @@
-import commander.Command as Command
-from receivers.PowerSupply import PowerSupply
+from commander.Command import Command
+from commander.receivers.PowerSupply import PowerSupply
 
 class PowerSupplySleepCommand(Command):
 
