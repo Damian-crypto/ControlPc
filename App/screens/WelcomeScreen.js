@@ -7,11 +7,7 @@ const imgBg = require('../assets/images/bg.png');
 
 const WelcomeScreen = ({navigation}) => {
     return (
-        <ImageBackground
-            source={imgBg}
-            resizeMode="cover"
-            style={styles.imagedBg}
-        >
+        <View style={styles.backgroundView}>
             <SafeAreaView style={styles.subcontainer}>
                 <Text style={{
                     color: '#fff',
@@ -34,13 +30,14 @@ const WelcomeScreen = ({navigation}) => {
                         onTouch={() => navigation.navigate("Setup") }/>
                 </View>
             </SafeAreaView>
-        </ImageBackground>
+        </View>
     )
 };
 
 const styles = StyleSheet.create({
-    imagedBg: {
+    backgroundView: {
         flex: 1,
+        backgroundColor: 'black',
     },
     subcontainer: {
         flex: 1,

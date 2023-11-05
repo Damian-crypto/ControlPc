@@ -13,7 +13,10 @@ const RoundedButton = ({
         }]}>
             {/* In below code onPress only activated when clicked on the text,
                 but the entire button should be clickable */}
-            <TouchableOpacity style={styles.btnArea} onPress={onTouch}>
+            <TouchableOpacity style={[styles.btnArea, {
+                width: width,
+                height: height,
+            }]} onPress={onTouch}>
                 <Text style={styles.lblStyle}>{ label }</Text>
             </TouchableOpacity>
         </View>

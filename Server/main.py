@@ -8,6 +8,8 @@ from commander.commands.PowerSupplySleepCommand import PowerSupplySleepCommand
 from Controller import Controller
 from utils.authentication.UUID import UUIDBuilder
 
+from utils.screen.MultipartServer import MultipartServer
+
 PORT = 5000
 HOST = '0.0.0.0'
 
@@ -23,6 +25,8 @@ __uuid = ''
 
 controller.setCommand("shutdown", shutdownCmd)
 controller.setCommand("sleep", sleepCmd)
+
+screen_server = MultipartServer()
 
 @app.route('/')
 def welcome():
@@ -42,6 +46,14 @@ def command():
                 controller.on("sleep")
             elif cmd == "shutdown":
                 controller.on("shutdown")
+            elif cmd == "screenserver":
+                view = data["view"]
+                act = data["act"]
+                if act == 'start':
+                    screen_server.start()
+                    screen_server.change_view(view)
+                else:
+                    screen_server.end()
             
             print(f"Request received: {request.get_json()['command']}")
 
@@ -69,6 +81,10 @@ def connect():
             return Response("Authenticated", status=200, mimetype='application/json')
     
     return Response("Invalid identity", status=403, mimetype='application/json')
+
+@app.route("/screenstream")
+def screen_stream():
+    return Response(screen_server.get_screen_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     __uuid = uuid_builder.generate_one()

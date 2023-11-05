@@ -36,11 +36,7 @@ const Dashboard = ({navigation, route}) => {
     }
 
     return(
-        <ImageBackground
-            source={imgBg}
-            resizeMode="cover"
-            style={styles.imagedBg}
-        >
+        <View style={styles.backgroundView}>
             <SafeAreaView style={styles.container}>
                 <Text style={{ left: 10, color: '#fff' }}>Connected to: {baseUrl}</Text>
                 <Modal
@@ -87,6 +83,7 @@ const Dashboard = ({navigation, route}) => {
                     <DashboardIcon
                         // label={"Screenshot"}
                         icon={imgCam}
+                        onTouch={() => navigation.navigate("LiveScreen", { baseUrl: baseUrl, uuid: uuid })}
                     />
                     <DashboardIcon
                         // label={"Run"}
@@ -94,14 +91,15 @@ const Dashboard = ({navigation, route}) => {
                     />
                 </View>
             </SafeAreaView>
-        </ImageBackground>
+        </View>
     )
 };
 
 const styles = StyleSheet.create({
-    imagedBg: {
+    backgroundView: {
         flex: 1,
         justifyContent: 'center',
+        backgroundColor: '#000',
     },
     container: {
         flex: 1,

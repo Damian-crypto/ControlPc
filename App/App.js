@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WelcomeScreen from './screens/WelcomeScreen';
 import SetupScreen from './screens/SetupScreen';
 import Dashboard from './screens/Dashboard';
+import LiveScreen from './screens/LiveScreen';
 
 const NavStack = createNativeStackNavigator();
 
@@ -28,6 +29,12 @@ const App = () => {
 				<NavStack.Screen
 					name = "Dashboard"
 					component = {Dashboard}
+					options={{
+						headerShown: true,
+					}}/>
+				<NavStack.Screen
+					name = "LiveScreen"
+					component = {LiveScreen}
 					options={{
 						headerShown: true,
 					}}/>

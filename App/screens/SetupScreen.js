@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, Image, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TextInput, Image, ScrollView, StatusBar } from "react-native";
 import { ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -92,11 +92,7 @@ const SetupScreen = ({ navigation }) => {
 
     return (
         <ScrollView>
-            <ImageBackground
-                source={imgBg}
-                resizeMode="cover"
-                style={styles.imagedBg}
-            >
+            <View style={styles.backgroundView}>
                 <SafeAreaView>
                     <View style={styles.roundedContainer}>
                         <Text
@@ -153,17 +149,19 @@ const SetupScreen = ({ navigation }) => {
                             onTouch={() => navigation.navigate("Welcome")} />
                     </View>
                 </SafeAreaView>
-            </ImageBackground>
+            </View>
+            <StatusBar style="auto"/>
         </ScrollView>
     )
 };
 
 const styles = StyleSheet.create({
-    imagedBg: {
+    backgroundView: {
         flex: 1,
         justifyContent: 'center',
         paddingTop: 10,
         paddingBottom: 10,
+        backgroundColor: '#000',
     },
     roundedContainer: {
         backgroundColor: '#fff',
