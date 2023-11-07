@@ -83,7 +83,7 @@ const Dashboard = ({navigation, route}) => {
                     <DashboardIcon
                         // label={"Screenshot"}
                         icon={imgCam}
-                        onTouch={() => navigation.navigate("LiveScreen", { baseUrl: baseUrl, uuid: uuid })}
+                        onTouch={() => navigation.navigate("Live Screen", { baseUrl: baseUrl, uuid: uuid })}
                     />
                     <DashboardIcon
                         // label={"Run"}

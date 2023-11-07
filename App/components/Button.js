@@ -5,6 +5,7 @@ const RoundedButton = ({
     onTouch,
     width = 200,
     height = 50,
+    fontSize = 24,
     }) => {
     return (
         <View style={[styles.btnStyle, styles.btnArea, {
@@ -17,7 +18,9 @@ const RoundedButton = ({
                 width: width,
                 height: height,
             }]} onPress={onTouch}>
-                <Text style={styles.lblStyle}>{ label }</Text>
+                <Text style={[styles.lblStyle, {
+                    fontSize: fontSize,
+                }]}>{ label }</Text>
             </TouchableOpacity>
         </View>
     );
@@ -34,7 +37,6 @@ const styles = StyleSheet.create({
     },
     lblStyle: {
         color: '#fff',
-        fontSize: 24,
     },
 });
 

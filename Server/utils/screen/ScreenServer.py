@@ -15,5 +15,5 @@ class ScreenServer(ABC):
         pass
 
     @abstractmethod
-    def change_view(self, view):
+    def change_view(self, view, port=0):
         pass

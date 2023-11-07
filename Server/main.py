@@ -49,9 +49,14 @@ def command():
             elif cmd == "screenserver":
                 view = data["view"]
                 act = data["act"]
+                port = data["camport"]
+                if len(port) == 0 or port == '':
+                    port = int(port.strip())
                 if act == 'start':
+                    print(f"start with {view}")
                     screen_server.start()
                     screen_server.change_view(view)
+                    screen_server.set_cam_port(port)
                 else:
                     screen_server.end()
             
@@ -84,10 +89,10 @@ def connect():
 
 @app.route("/screenstream")
 def screen_stream():
-    return Response(screen_server.get_screen_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(screen_server.get_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     __uuid = uuid_builder.generate_one()
     print(f'Use this key as your identity: {__uuid}')
 
-    app.run(debug=False, host=HOST, port=PORT)
+    app.run(debug=False, host=HOST, port=PORT, threaded=True)

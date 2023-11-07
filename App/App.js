@@ -33,7 +33,7 @@ const App = () => {
 						headerShown: true,
 					}}/>
 				<NavStack.Screen
-					name = "LiveScreen"
+					name = "Live Screen"
 					component = {LiveScreen}
 					options={{
 						headerShown: true,
