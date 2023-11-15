@@ -1,10 +1,9 @@
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
-import { ImageBackground } from "react-native";
+// import { ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DashboardIcon from "../components/DashboardIcon";
 import { useState } from "react";
 
-const imgBg = require('../assets/images/bg.png');
 const imgPower = require('../assets/images/power.png');
 const imgSleep = require('../assets/images/sleep.png');
 const imgRestart = require('../assets/images/restart.png');

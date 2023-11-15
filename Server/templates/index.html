@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Self View</title>
+    <style>
+        body {
+            margin: 0;
+            left: 0;
+            top: 0;
+        }
+
+        #vscreen {
+            margin-left: 50px;
+        }
+        </style>
+        
+        <!-- <script>
+            const baseURL = "http://192.168.1.101:5000";
+            const uuid = '0cl';
+        </script> -->
+        <script src="{{url_for('static', filename='script.js')}}"></script>
+</head>
+<body onload="loaded()">
+    <!-- <img id="vscreen" src="http://192.168.1.101:5002/vid"> -->
+    <img id="vscreen">
+</body>
+</html>

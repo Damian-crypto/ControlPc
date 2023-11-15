@@ -39,15 +39,31 @@ const NativeVideoComponent = ({ streamLink }) => {
     );
 };
 
-const WebViewComponent = ({ streamLink, webViewRef }) => {
+const WebViewComponent = ({ webViewRef, targetURL, uuid, html }) => {
     return (
+        html
+        ?
         <WebView
             ref={webViewRef}
-            style={{ flex: 1 }}
+            style={{
+                flex: 1,
+                backgroundColor: '#000',
+             }}
             javaScriptEnabled={true}
+            injectedJavaScriptBeforeContentLoaded={`const baseURL = ${targetURL}; const uuid = ${uuid}`}
             source={{
-                // uri: streamLink
-                html: `<img src="${streamLink}"/>`
+                uri: `${targetURL}/remote`
+            }}
+        />
+        :
+        <WebView
+            ref={webViewRef}
+            style={{
+                flex: 1,
+                backgroundColor: '#000',
+             }}
+             source={{
+                html: `<img src="${targetURL}"/>`
             }}
         />
     );
@@ -70,7 +86,7 @@ const LiveScreen = ({ navigation, route }) => {
     const { baseUrl, uuid } = route.params;
     const [screen, setScreen] = useState(false);
     const [screenMode, setScreenMode] = useState("Screen");
-    const [camPort, setCamPort] = useState("0");
+    const [camPort, setCamPort] = useState(0);
     const webViewRef = useRef(null);
 
     function onScreenServer(cmd, view, port) {
@@ -85,17 +101,20 @@ const LiveScreen = ({ navigation, route }) => {
                 command: 'screenserver',
                 act: cmd,
                 view: view,
-                camport: port
+                camport: port.toString()
             })
         })
-            .then((response) => response.json())
-            .then((data) => {
+            .then((response) => {
                 setScreen(true);
                 if (webViewRef.current) {
                     // console.log('Reloading...');
                     webViewRef.current.reload();
                 }
-                alert(`Video data received: ${data['message']}`);
+
+                return '';
+            })
+            .then((data) => {
+                // alert(`Video data received: ${data['message']}`);
             })
             .catch((error) => {
                 setScreen(false);
@@ -115,7 +134,17 @@ const LiveScreen = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            {screen ? <WebViewComponent webViewRef={webViewRef} streamLink={`${baseUrl}/screenstream`} /> : <Text>Connecting</Text>}
+            {
+            screen
+                ?
+                screenMode === "Screen"
+                    ?
+                    <WebViewComponent targetURL={baseUrl} webViewRef={webViewRef} html={true} />
+                    :
+                    <WebViewComponent targetURL={`${baseUrl}/screenstream`} webViewRef={webViewRef} html={false} />
+                :
+                <Text>Connecting</Text>
+            }
 
             <View style={styles.controls}>
                 <View style={styles.controlsRow}>
@@ -136,17 +165,18 @@ const LiveScreen = ({ navigation, route }) => {
                     <View style={styles.inputWithLabel}>
                         <Text style={[styles.txtStyle,
                         {
-                            borderColor: '#f00',
-                            borderWidth: 2,
+                            // borderColor: '#f00',
+                            // borderWidth: 2,
                         }
                         ]}>{screenMode} Port</Text>
                         <TextInput
                             style={[styles.txtStyle, {
-                                borderColor: '#f00',
-                                borderWidth: 2,
+                                margin: 10,
+                                // borderColor: '#f00',
+                                // borderWidth: 2,
                             }]}
-                            value={camPort}
-                            onChangeText={setCamPort}
+                            value={camPort.toString()}
+                            onChangeText={(val) => setCamPort(parseInt(val)) }
                         />
                     </View>
                     <RoundedButton
@@ -154,14 +184,14 @@ const LiveScreen = ({ navigation, route }) => {
                         width={40}
                         height={40}
                         fontSize={16}
-                        onTouch={() => { setCamPort(parseInt(camPort) + 1) }}
+                        onTouch={() => { setCamPort(camPort + 1) }}
                     />
                     <RoundedButton
                         label={"-"}
                         width={40}
                         height={40}
                         fontSize={16}
-                        onTouch={() => { setCamPort(parseInt(camPort) - 1) }}
+                        onTouch={() => { setCamPort(Math.max(0, camPort - 1)) }}
                     />
                     <RoundedButton
                         label={"Apply"}
@@ -202,8 +232,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
 
         color: '#fff',
-        borderColor: '#ff0',
-        borderWidth: 2,
+        // borderColor: '#ff0',
+        // borderWidth: 2,
     },
     txtStyle: {
         color: '#fff',

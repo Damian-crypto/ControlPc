@@ -1,11 +1,14 @@
-from flask import Flask, request, json, Response
+from flask import Flask, request, json, Response, render_template
 # from flask_restful import Api, Resource
 
 import commander.Command as Command
+from Controller import Controller
 from commander.receivers.PowerSupply import *
+from commander.receivers.MouseController import *
 from commander.commands.PowerSupplyShutdownCommand import PowerSupplyShutdownCommand
 from commander.commands.PowerSupplySleepCommand import PowerSupplySleepCommand
-from Controller import Controller
+from commander.commands.MouseSingleClickCommand import MouseSingleClickCommand
+from commander.commands.MouseDoubleClickCommand import MouseDoubleClickCommand
 from utils.authentication.UUID import UUIDBuilder
 
 from utils.screen.MultipartServer import MultipartServer
@@ -19,18 +22,25 @@ controller = Controller()
 powerSuppy = PowerSupply()
 shutdownCmd = PowerSupplyShutdownCommand(powerSuppy)
 sleepCmd = PowerSupplySleepCommand(powerSuppy)
+
+mouse = MouseController()
+mouseSingleClickCmd = MouseSingleClickCommand(mouse)
+mouseDoubleClickCmd = MouseDoubleClickCommand(mouse)
+
 uuid_builder = UUIDBuilder(3).add_digits().build()
 
 __uuid = ''
 
 controller.setCommand("shutdown", shutdownCmd)
 controller.setCommand("sleep", sleepCmd)
+controller.setCommand("singleClick", mouseSingleClickCmd)
+controller.setCommand("doubleClick", mouseDoubleClickCmd)
 
 screen_server = MultipartServer()
 
 @app.route('/')
 def welcome():
-    return f'Welcome to the ControlPc (Server is up at {HOST}:{PORT})'
+    return Response(f'Welcome to the ControlPc (Server is up at {HOST}:{PORT})', status=200)
 
 @app.route("/command", methods=["POST"])
 def command():
@@ -53,24 +63,28 @@ def command():
                 if len(port) == 0 or port == '':
                     port = int(port.strip())
                 if act == 'start':
-                    print(f"start with {view}")
+                    print(f"Starts with {view}")
                     screen_server.start()
                     screen_server.change_view(view)
                     screen_server.set_cam_port(port)
                 else:
                     screen_server.end()
+            elif cmd == "singleclick":
+                btn = data["button"]
+                x, y = float(data['x']), float(data['y'])
+                mouseSingleClickCmd.btn = btn
+                mouseSingleClickCmd.x = x
+                mouseSingleClickCmd.y = y
+                controller.on("singleClick")
+            elif cmd == "doubleclick":
+                btn = int(data["button"])
+                mouseDoubleClickCmd.btn = btn
+                controller.on("doubleClick")
             
             print(f"Request received: {request.get_json()['command']}")
-
-            data = {
-                'status': 200,
-                'message': f'Request executed: {request.get_json()["command"]}'
-            }
+            return Response(f'Request executed: {request.get_json()["command"]}', status=200)
         else:
-            data = {
-                'status': 200,
-                'message': f'Request rejected: Invalid identity'
-            }
+            return Response(f'Request rejected: Invalid identity', status=401)
     
     return json.dumps(data)
 
@@ -90,6 +104,10 @@ def connect():
 @app.route("/screenstream")
 def screen_stream():
     return Response(screen_server.get_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route("/remote")
+def remote():
+    return render_template('index.html')
 
 if __name__ == '__main__':
     __uuid = uuid_builder.generate_one()
