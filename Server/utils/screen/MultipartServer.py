@@ -27,11 +27,14 @@ class MultipartServer(ScreenServer):
     def change_view(self, view, port=0):
         self.mode = view
         self.camport = port
+    
+    def get_screen_size(self):
+        width, height = pyautogui.size()
+        return { 'width': width, 'height': height }
 
     def get_screen_frame(self):
         try:
             while self.running and self.mode == 'Screen':
-                # width, height = pyautogui.size()
                 image = pyautogui.screenshot()
                 frame = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
                 ret, buffer = cv2.imencode('.jpg', frame)

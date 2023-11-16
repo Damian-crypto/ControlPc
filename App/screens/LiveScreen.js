@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet, Button, Text, TextInput } from 'react-native';
+import { View, StyleSheet, Button, Text, TextInput, ActivityIndicator } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
 import { WebView } from 'react-native-webview';
 import { useFocusEffect } from "@react-navigation/native";
@@ -42,30 +42,26 @@ const NativeVideoComponent = ({ streamLink }) => {
 const WebViewComponent = ({ webViewRef, targetURL, uuid, html }) => {
     return (
         html
-        ?
-        <WebView
-            ref={webViewRef}
-            style={{
-                flex: 1,
-                backgroundColor: '#000',
-             }}
-            javaScriptEnabled={true}
-            injectedJavaScriptBeforeContentLoaded={`const baseURL = ${targetURL}; const uuid = ${uuid}`}
-            source={{
-                uri: `${targetURL}/remote`
-            }}
-        />
-        :
-        <WebView
-            ref={webViewRef}
-            style={{
-                flex: 1,
-                backgroundColor: '#000',
-             }}
-             source={{
-                html: `<img src="${targetURL}"/>`
-            }}
-        />
+            ?
+            <WebView
+                ref={webViewRef}
+                style={styles.webViewStyle}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
+                source={{
+                    uri: `${targetURL}/remote`
+                }}
+                injectedJavaScriptBeforeContentLoaded={`window.localStorage.setItem("targetURL", "${targetURL}"); window.localStorage.setItem("uuid", "${uuid}"); true;`}
+                onMessage={(evt) => { }}
+            />
+            :
+            <WebView
+                ref={webViewRef}
+                style={styles.webViewStyle}
+                source={{
+                    html: `<img src="${targetURL}"/>`
+                }}
+            />
     );
 };
 
@@ -135,15 +131,18 @@ const LiveScreen = ({ navigation, route }) => {
     return (
         <View style={styles.container}>
             {
-            screen
-                ?
-                screenMode === "Screen"
+                screen
                     ?
-                    <WebViewComponent targetURL={baseUrl} webViewRef={webViewRef} html={true} />
+                    screenMode === "Screen"
+                        ?
+                        <WebViewComponent targetURL={baseUrl} webViewRef={webViewRef} html={true} uuid={uuid} />
+                        :
+                        <WebViewComponent targetURL={`${baseUrl}/screenstream`} webViewRef={webViewRef} html={false} />
                     :
-                    <WebViewComponent targetURL={`${baseUrl}/screenstream`} webViewRef={webViewRef} html={false} />
-                :
-                <Text>Connecting</Text>
+                    <View>
+                        <ActivityIndicator size="large" />
+                        <Text style={styles.txtStyle}>Connecting...</Text>
+                    </View>
             }
 
             <View style={styles.controls}>
@@ -151,6 +150,7 @@ const LiveScreen = ({ navigation, route }) => {
                     <Text style={styles.txtStyle}>Screen Mode</Text>
                     <ModeSelector selected={screenMode} onChange={(itemValue) => {
                         setScreenMode(itemValue);
+                        setScreen(false);
                     }}
                     />
                     {/* <RoundedButton
@@ -176,7 +176,7 @@ const LiveScreen = ({ navigation, route }) => {
                                 // borderWidth: 2,
                             }]}
                             value={camPort.toString()}
-                            onChangeText={(val) => setCamPort(parseInt(val)) }
+                            onChangeText={(val) => setCamPort(parseInt(val))}
                         />
                     </View>
                     <RoundedButton
@@ -245,7 +245,11 @@ const styles = StyleSheet.create({
     controlsRow: {
         flexDirection: 'row',
         gap: 10,
-    }
+    },
+    webViewStyle: {
+        flex: 1,
+        backgroundColor: '#000',
+    },
 });
 
 export default LiveScreen;

@@ -1,26 +1,27 @@
+var baseURL = 'not found';
+var uuid = 'not found';
 var screenHeight = 0;
 var screenWidth = 0;
 var mouseX = 0;
 var mouseY = 0;
 const scalingFactor = 0.5;
-// const baseURL = 'http://192.168.1.101:5002';
-// const uuid = '0cl';
 
-function loaded() {
+function loaded(BASE_URL, UUID) {
+    baseURL = BASE_URL;
+    uuid = UUID;
+
     var img = document.getElementById("vscreen");
     img.src = `${baseURL}/screenstream`;
 
-    // fetch(`${baseURL}/screensize`)
-    // .then((res) => res.json())
-    // .then((data) => {
-        const data = [ 1280, 1024 ];
-        screenWidth = data[0];
-        screenHeight = data[1];
+    fetch(`${baseURL}/screensize`)
+    .then((res) => res.json())
+    .then((data) => {
+        screenWidth = data['width'];
+        screenHeight = data['height'];
         img.style.width = `${screenWidth * scalingFactor}px`;
         img.style.height = `${screenHeight * scalingFactor}px`;
-        console.log(data);
-    // })
-    // .catch(alert);
+    })
+    .catch(alert);
 
     img.addEventListener("mousedown", (evt) => {
         mouseMove(evt.pageX, evt.pageY);
@@ -51,11 +52,7 @@ function mapScreen(x, y) {
 
 function singleClick(x, y) {
     const [screenX, screenY] = mapScreen(x, y);
-    // alert(uuid);
-    // alert(baseURL);
-    // alert(`${screenX}, ${screenY}`);
-    
-    // fetch('http://192.168.1.101:5002/clicked').then(() => {}).catch(console.warn);
+
     fetch(`${baseURL}/command`, {
         method: 'POST',
         headers: {
@@ -75,9 +72,24 @@ function singleClick(x, y) {
 
 function doubleClick(x, y) {
     const [screenX, screenY] = mapScreen(x, y);
-    
-    // fetch('http://192.168.1.101:5002/clicked').then(() => {}).catch(console.warn);
-    fetch(`${baseURL}/dblclick?x=${screenX}&y=${screenY}`)
+
+    fetch(`${baseURL}/command`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            uuid: uuid,
+            command: 'doubleclick',
+            x: screenX,
+            y: screenY,
+            button: 'left',
+        })
+    })
     .then((res) => {})
     .catch(alert);
+}
+
+function loadAll() {
+    loaded(window.localStorage.getItem('targetURL'), window.localStorage.getItem('uuid'));
 }
