@@ -60,10 +60,9 @@ function singleClick(x, y) {
         },
         body: JSON.stringify({
             uuid: uuid,
-            command: 'singleclick',
+            command: 'mouse_singleclick_left',
             x: screenX,
             y: screenY,
-            button: 'left',
         })
     })
     .then((res) => {})
@@ -80,10 +79,9 @@ function doubleClick(x, y) {
         },
         body: JSON.stringify({
             uuid: uuid,
-            command: 'doubleclick',
+            command: 'mouse_doubleclick_left',
             x: screenX,
             y: screenY,
-            button: 'left',
         })
     })
     .then((res) => {})

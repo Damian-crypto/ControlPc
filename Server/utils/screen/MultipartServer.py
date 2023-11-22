@@ -27,6 +27,7 @@ class MultipartServer(ScreenServer):
     def change_view(self, view, port=0):
         self.mode = view
         self.camport = port
+        print(f'Screen server changed mode: {view}, port: {port}')
     
     def get_screen_size(self):
         width, height = pyautogui.size()

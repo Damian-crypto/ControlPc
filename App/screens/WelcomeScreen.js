@@ -1,27 +1,20 @@
-import { View, Text, StyleSheet } from "react-native";
-import { ImageBackground } from "react-native";
-import RoundedButton from "../components/Button";
+import { View, Text, StyleSheet, Image } from "react-native";
+import RoundedButton from "../components/RoundedButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const imgBg = require('../assets/images/bg.png');
+const logoImg = require('../assets/app/icon.png');
 
 const WelcomeScreen = ({navigation}) => {
     return (
         <View style={styles.backgroundView}>
             <SafeAreaView style={styles.subcontainer}>
+                <Image style={styles.logoContainer} source={logoImg} />
                 <Text style={{
                     color: '#fff',
                     fontSize: 36,
                     fontWeight: 'bold',
                 }}>
-                    Welcome
-                </Text>
-                <Text style={{
-                    color: '#fff',
-                    fontSize: 36,
-                    fontWeight: 'bold',
-                }}>
-                    To ControlPc
+                    ControlPc
                 </Text>
 
                 <View style={styles.btnContinue}>
@@ -46,6 +39,11 @@ const styles = StyleSheet.create({
     },
     btnContinue: {
         top: 100,
+    },
+    logoContainer: {
+        width: 200,
+        height: 200,
+        margin: 10,
     }
 });
 

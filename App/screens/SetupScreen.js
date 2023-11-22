@@ -13,7 +13,7 @@ import {
 // import { ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import RoundedButton from "../components/Button";
+import RoundedButton from "../components/RoundedButton";
 import ClickableImage from "../components/ClickableImage";
 
 const InputField = ({ label, placeholder, value, onChange, flexGrow }) => {
@@ -45,7 +45,7 @@ const InputField = ({ label, placeholder, value, onChange, flexGrow }) => {
     )
 };
 
-const qrImg = require('../assets/images/QR.png');
+const qrImg = require('../assets/images/qr.png');
 
 const SetupScreen = ({ navigation }) => {
     const [mainIPAddr, setMainIPAddr] = useState("192.168.1.100");

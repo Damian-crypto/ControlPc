@@ -7,7 +7,7 @@ class NoCommand(Command):
     def undo(self):
         pass
 
-class Controller:
+class Invoker:
 
     def __init__(self):
         self.__commands = defaultdict(NoCommand)

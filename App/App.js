@@ -10,6 +10,7 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import SetupScreen from './screens/SetupScreen';
 import Dashboard from './screens/Dashboard';
 import LiveScreen from './screens/LiveScreen';
+import TerminalScreen from './screens/TerminalScreen';
 
 const NavStack = createNativeStackNavigator();
 
@@ -22,12 +23,16 @@ const App = () => {
 		async function prepare() {
 			try {
 				const images = [
-					require('./assets/images/QR.png'),
+					require('./assets/images/qr.png'),
 					require('./assets/images/power.png'),
 					require('./assets/images/sleep.png'),
 					require('./assets/images/restart.png'),
 					require('./assets/images/camera.png'),
-					require('./assets/images/zap.png')
+					require('./assets/images/settings.png'),
+					require('./assets/images/box.png'),
+					require('./assets/images/terminal.png'),
+					require('./assets/images/info.png'),
+					require('./assets/app/icon.png'),
 				];
 
 				const cacheImages = images.map(img => {
@@ -79,6 +84,12 @@ const App = () => {
 					<NavStack.Screen
 						name="Live Screen"
 						component={LiveScreen}
+						options={{
+							headerShown: true,
+						}} />
+					<NavStack.Screen
+						name="Terminal"
+						component={TerminalScreen}
 						options={{
 							headerShown: true,
 						}} />

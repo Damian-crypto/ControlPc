@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Modal, TouchableOpacity, Image } from "react-native";
 // import { ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DashboardIcon from "../components/DashboardIcon";
@@ -8,11 +8,17 @@ const imgPower = require('../assets/images/power.png');
 const imgSleep = require('../assets/images/sleep.png');
 const imgRestart = require('../assets/images/restart.png');
 const imgCam = require('../assets/images/camera.png');
-const imgRun = require('../assets/images/zap.png');
+const imgSettings = require('../assets/images/settings.png');
+const imgPlugin = require('../assets/images/box.png');
+const imgTerminal = require('../assets/images/terminal.png');
+const imgAbout = require('../assets/images/info.png');
+const imgLogo = require('../assets/app/icon.png');
+// const imgRun = require('../assets/images/zap.png');
 
 const Dashboard = ({navigation, route}) => {
     const { baseUrl, uuid } = route.params;
     const [ powerModalVisible, setPowerModalVisible ] = useState(false);
+    const [ aboutModalVisible, setAboutModalVisible ] = useState(false);
 
     async function handlePower(cmd) {
         fetch(`${baseUrl}/command`, {
@@ -73,6 +79,53 @@ const Dashboard = ({navigation, route}) => {
                     </TouchableOpacity>
                 </Modal>
 
+                <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={aboutModalVisible}
+                >
+                    <TouchableOpacity style={{
+                        flex: 1,
+                        backgroundColor: '#000000cc',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                    }}
+                        onPress={() => setAboutModalVisible(false)}
+                    >
+                        <Image
+                            source={imgLogo}
+                            style={{
+                                width: 200,
+                                height: 200,
+                                margin: 10,
+                            }}
+                        />
+                        <Text style={{
+                            fontSize: 36,
+                            color: '#fff',
+                        }}>ControlPc</Text>
+                        <Text style={{
+                            fontSize: 20,
+                            color: '#fff',
+                        }}>Developed by ZEUS</Text>
+                        <View style={{
+                            flexDirection: 'row',
+                            gap: 10,
+                            }}>
+                            <Text style={{
+                                fontSize: 16,
+                                color: '#fff',
+                            }}>Contact Author:</Text>
+                            <Text style={{
+                                fontSize: 16,
+                                color: '#0f0',
+                                fontStyle: 'italic',
+                            }}>bdamianchamel@gmail.com</Text>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+
                 <View style={styles.btnRow}>
                     <DashboardIcon
                         // label={"Power"}
@@ -86,7 +139,26 @@ const Dashboard = ({navigation, route}) => {
                     />
                     <DashboardIcon
                         // label={"Run"}
-                        icon={imgRun}
+                        icon={imgTerminal}
+                        onTouch={() => navigation.navigate("Terminal", { baseURL: baseUrl, uuid: uuid }) }
+                    />
+                </View>
+
+                <View style={styles.btnRow}>
+                    <DashboardIcon
+                        // label={"Power"}
+                        icon={imgSettings}
+                        onTouch={() => {}}
+                    />
+                    <DashboardIcon
+                        // label={"Screenshot"}
+                        icon={imgPlugin}
+                        onTouch={() => {}}
+                    />
+                    <DashboardIcon
+                        // label={"Run"}
+                        icon={imgAbout}
+                        onTouch={() => setAboutModalVisible(true)}
                     />
                 </View>
             </SafeAreaView>

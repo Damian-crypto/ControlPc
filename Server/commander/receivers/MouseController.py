@@ -11,26 +11,24 @@ class MouseController:
     def move(self, x, y):
         self.mouseX = x
         self.mouseY = y
-        pyautogui.move(x, y)
+        pyautogui.move(self.mouseX, self.mouseY)
     
-    def singleClick(self, x, y, btn):
-        self.mouseX = x
-        self.mouseY = y
+    def singleClick(self, btn):
         self.dragging = True
         self.prvButton = btn
-        pyautogui.click(x, y, button=btn)
+        pyautogui.click(self.mouseX, self.mouseY, button=btn)
     
-    def doubleClick(self, x, y, btn):
-        self.mouseX = x
-        self.mouseY = y
+    def doubleClick(self, btn):
         self.dragging = True
         self.prvButton = btn
-        pyautogui.click(x, y, clicks=2, button=btn)
+        pyautogui.click(self.mouseX, self.mouseY, clicks=2, button=btn)
 
-    def mouseReleased(self, x, y, btn):
+    def mouseReleased(self, btn):
+        self.dragging = False
+    
+    def setPosition(self, x, y):
         self.mouseX = x
         self.mouseY = y
-        self.dragging = False
     
     def mouseScroll(self):
         pass

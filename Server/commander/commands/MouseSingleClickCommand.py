@@ -3,14 +3,12 @@ from commander.receivers.MouseController import MouseController
 
 class MouseSingleClickCommand(Command):
 
-    def __init__(self, mouse: MouseController):
-        self.x = 0
-        self.y = 0
-        self.btn = 0
+    def __init__(self, mouse: MouseController, button: str):
+        self.btn = button
         self.__mouse = mouse
     
     def execute(self):
-        self.__mouse.singleClick(self.x, self.y, self.btn)
+        self.__mouse.singleClick(self.btn)
     
     def undo(self):
         pass
