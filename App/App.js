@@ -11,6 +11,7 @@ import SetupScreen from './screens/SetupScreen';
 import Dashboard from './screens/Dashboard';
 import LiveScreen from './screens/LiveScreen';
 import TerminalScreen from './screens/TerminalScreen';
+import SettingsScreen from './screens/SettingsScreen';
 
 const NavStack = createNativeStackNavigator();
 
@@ -41,7 +42,7 @@ const App = () => {
 
 				return await Promise.all(cacheImages);
 			} catch (e) {
-				console.warn(e);
+				// console.warn(e);
 			} finally {
 				setAppIsReady(true);
 			}
@@ -90,6 +91,12 @@ const App = () => {
 					<NavStack.Screen
 						name="Terminal"
 						component={TerminalScreen}
+						options={{
+							headerShown: true,
+						}} />
+					<NavStack.Screen
+						name="Settings"
+						component={SettingsScreen}
 						options={{
 							headerShown: true,
 						}} />

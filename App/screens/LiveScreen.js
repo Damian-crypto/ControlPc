@@ -80,7 +80,7 @@ const ModeSelector = ({ selected, onChange }) => {
 };
 
 const LiveScreen = ({ navigation, route }) => {
-    const { baseUrl, uuid } = route.params;
+    const { baseURL, uuid } = route.params;
     const [screen, setScreen] = useState(false);
     const [screenMode, setScreenMode] = useState("Screen");
     const [camPort, setCamPort] = useState(0);
@@ -107,7 +107,7 @@ const LiveScreen = ({ navigation, route }) => {
     }
 
     function onViewChange(view, port) {
-        fetch(`${baseUrl}/command`, {
+        fetch(`${baseURL}/command`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -134,8 +134,8 @@ const LiveScreen = ({ navigation, route }) => {
     }
 
     function onScreenServer(cmd) {
-        // console.log(baseUrl);
-        fetch(`${baseUrl}/command`, {
+        // console.log(baseURL);
+        fetch(`${baseURL}/command`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -161,7 +161,7 @@ const LiveScreen = ({ navigation, route }) => {
     }
 
     async function handleKeyEvents(key) {
-        await fetch(`${baseUrl}/command`, {
+        await fetch(`${baseURL}/command`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -187,9 +187,9 @@ const LiveScreen = ({ navigation, route }) => {
                     ?
                     screenMode === "Screen"
                         ?
-                        <WebViewComponent targetURL={baseUrl} webViewRef={webViewRef} html={true} uuid={uuid} />
+                        <WebViewComponent targetURL={baseURL} webViewRef={webViewRef} html={true} uuid={uuid} />
                         :
-                        <WebViewComponent targetURL={`${baseUrl}/screenstream`} webViewRef={webViewRef} html={false} />
+                        <WebViewComponent targetURL={`${baseURL}/screenstream`} webViewRef={webViewRef} html={false} />
                     :
                     <View>
                         <ActivityIndicator size="large" />

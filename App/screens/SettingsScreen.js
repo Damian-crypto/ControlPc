@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -8,8 +8,9 @@ import {
     ScrollView,
     StatusBar,
     Modal,
-    ActivityIndicator
+    ActivityIndicator,
 } from "react-native";
+import Checkbox from "expo-checkbox";
 // import { ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -47,63 +48,44 @@ const InputField = ({ label, placeholder, value, onChange, flexGrow }) => {
 
 const qrImg = require('../assets/images/qr.png');
 
-const SetupScreen = ({ navigation }) => {
+const SettingsScreen = ({ navigation, route }) => {
+    const { baseURL, uuid } = route.params;
     const [mainIPAddr, setMainIPAddr] = useState("192.168.1.100");
     const [fromIpAddr, setFromIpAddr] = useState("192.168.1.100");
     const [toIpAddr, setToIpAddr] = useState("192.168.1.160");
-    const [identity, setIdentity] = useState("");
+    // const [uuid, setIdentity] = useState("");
     const [port, setPort] = useState("5000");
-    const [baseURL, setBaseURL] = useState(`http://${mainIPAddr}:${port}`);
+    // const [baseURL, setBaseURL] = useState(`http://${mainIPAddr}:${port}`);
     const [showIPRangeModal, setShowIPRangeModal] = useState(false);
     const [scanningIPs, setScanningIPs] = useState(false);
+    const [serverVisible, setServerVisible] = useState(true);
 
     function reasignBaseURL(newipaddr, newport) {
         setBaseURL(`http://${newipaddr}:${newport}`);
     }
 
-    async function handleConnect() {
-        await fetch(`${baseURL}/connect`, {
+    useEffect(() => {
+        const pattern = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\:\d{1,4}/g;
+        const match = pattern.exec(baseURL);
+        const urlParts = match[0].split(':');
+
+        setMainIPAddr(urlParts[0]);
+        setPort(urlParts[1]);
+    }, []);
+
+    async function handleSave() {
+        await fetch(`${baseURL}/configured`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                uuid: identity,
+                uuid: uuid,
             })
         })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`Invalid request! ${response.json()["message"]}`);
-                }
-                return response.text();
-            })
-            .then(data => {
-                navigation.navigate("Dashboard", { baseURL: baseURL, uuid: identity });
-            })
+            .then((response) => {})
             .catch((error) => {
-                alert(`Connection failed[❌]: ${error}`);
-            });
-    }
-
-    async function handleTest() {
-        await fetch(`${baseURL}/`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'text/plain'
-            }
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    alert(`Connection failed[❌] invalid request!: ${error}`);
-                    throw new Error('Received request is not ok!');
-                }
-                return response.text();
-            })
-            .then(data => {
-                alert(`Test ok[✅]: ${data}`);
-            })
-            .catch((error) => {
-                alert(`Test failed[❌]: ${error}`);
+                alert(`Not configured due to loss of connection to the server!`);
             });
     }
 
@@ -138,6 +120,31 @@ const SetupScreen = ({ navigation }) => {
                 reject(mainIPAddr);
             }
         });
+    }
+
+    function handleServerVisibility(visible) {
+        setServerVisible(visible);
+        let cmd = 'window_';
+        if (visible === true) {
+            cmd += 'unhide';
+        } else {
+            cmd += 'hide';
+        }
+
+        fetch(`${baseURL}/command`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                uuid: uuid,
+                command: cmd,
+            })
+        })
+            .then((response) => {})
+            .catch((error) => {
+                alert(`Not configured due to loss of connection to the server!`);
+            });
     }
 
     return (
@@ -226,12 +233,15 @@ const SetupScreen = ({ navigation }) => {
 
                         <RoundedButton
                             label={"Scan"}
+                            width={130}
+                            fontSize={16}
                             onTouch={() => setShowIPRangeModal(true)}
                         />
 
                         <InputField
                             label={"Port:"}
                             placeholder={"5000"}
+                            value={port}
                             onTouch={setPort}
                         />
                     </View>
@@ -240,6 +250,7 @@ const SetupScreen = ({ navigation }) => {
                         <InputField
                             label={"Identity:"}
                             placeholder={"fghDhf3492t"}
+                            value={uuid}
                             flexGrow={0.8}
                             onChange={txt => setIdentity(txt)}
                         />
@@ -250,16 +261,32 @@ const SetupScreen = ({ navigation }) => {
                         />
                     </View>
 
+                    <View style={[styles.roundedContainer, {
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 10,
+                    }]}>
+                        <Text style={{
+                            fontSize: 20,
+                        }}>Server is visible</Text>
+                        <Checkbox
+                            value={serverVisible}
+                            onValueChange={handleServerVisibility}
+                            color={serverVisible ? 'purple' : undefined }
+                        />
+                    </View>
+
                     <View style={styles.btnContainer}>
                         <RoundedButton
-                            label={"Connect"}
-                            onTouch={handleConnect} />
-                        <RoundedButton
-                            label={"Test"}
-                            onTouch={handleTest} />
-                        <RoundedButton
                             label={"Cancel"}
-                            onTouch={() => navigation.navigate("Welcome")} />
+                            width={130}
+                            fontSize={16}
+                            onTouch={() => navigation.navigate("Dashboard", { baseURL: baseURL, uuid: uuid })} />
+                        <RoundedButton
+                            label={"Save"}
+                            width={130}
+                            fontSize={16}
+                            onTouch={handleSave} />
                     </View>
                 </SafeAreaView>
             </View>
@@ -287,10 +314,10 @@ const styles = StyleSheet.create({
     },
     btnContainer: {
         alignItems: 'center',
+        flexDirection: 'row',
         justifyContent: 'center',
-        flexDirection: 'column',
         gap: 10,
     }
 });
 
-export default SetupScreen;
+export default SettingsScreen;

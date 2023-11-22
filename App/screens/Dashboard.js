@@ -16,12 +16,12 @@ const imgLogo = require('../assets/app/icon.png');
 // const imgRun = require('../assets/images/zap.png');
 
 const Dashboard = ({navigation, route}) => {
-    const { baseUrl, uuid } = route.params;
+    const { baseURL, uuid } = route.params;
     const [ powerModalVisible, setPowerModalVisible ] = useState(false);
     const [ aboutModalVisible, setAboutModalVisible ] = useState(false);
 
     async function handlePower(cmd) {
-        fetch(`${baseUrl}/command`, {
+        fetch(`${baseURL}/command`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const Dashboard = ({navigation, route}) => {
     return(
         <View style={styles.backgroundView}>
             <SafeAreaView style={styles.container}>
-                <Text style={{ left: 10, color: '#fff' }}>Connected to: {baseUrl}</Text>
+                <Text style={{ left: 10, color: '#fff' }}>Connected to: {baseURL}</Text>
                 <Modal
                     animationType="fade"
                     transparent={true}
@@ -135,12 +135,12 @@ const Dashboard = ({navigation, route}) => {
                     <DashboardIcon
                         // label={"Screenshot"}
                         icon={imgCam}
-                        onTouch={() => navigation.navigate("Live Screen", { baseUrl: baseUrl, uuid: uuid })}
+                        onTouch={() => navigation.navigate("Live Screen", { baseURL: baseURL, uuid: uuid })}
                     />
                     <DashboardIcon
                         // label={"Run"}
                         icon={imgTerminal}
-                        onTouch={() => navigation.navigate("Terminal", { baseURL: baseUrl, uuid: uuid }) }
+                        onTouch={() => navigation.navigate("Terminal", { baseURL: baseURL, uuid: uuid }) }
                     />
                 </View>
 
@@ -148,7 +148,7 @@ const Dashboard = ({navigation, route}) => {
                     <DashboardIcon
                         // label={"Power"}
                         icon={imgSettings}
-                        onTouch={() => {}}
+                        onTouch={() => navigation.navigate("Settings", { baseURL: baseURL, uuid: uuid })}
                     />
                     <DashboardIcon
                         // label={"Screenshot"}
