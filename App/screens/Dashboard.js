@@ -116,7 +116,7 @@ const Dashboard = ({navigation, route}) => {
                             <Text style={{
                                 fontSize: 16,
                                 color: '#fff',
-                            }}>Contact Author:</Text>
+                            }}>Contact Developer:</Text>
                             <Text style={{
                                 fontSize: 16,
                                 color: '#0f0',

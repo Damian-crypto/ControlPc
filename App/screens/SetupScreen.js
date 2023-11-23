@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -10,11 +10,14 @@ import {
     Modal,
     ActivityIndicator
 } from "react-native";
-// import { ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import RoundedButton from "../components/RoundedButton";
 import ClickableImage from "../components/ClickableImage";
+
+import QRScannerModal from "../components/QRScannerModal";
+
+const qrImg = require('../assets/images/qr.png');
 
 const InputField = ({ label, placeholder, value, onChange, flexGrow }) => {
     return (
@@ -45,8 +48,6 @@ const InputField = ({ label, placeholder, value, onChange, flexGrow }) => {
     )
 };
 
-const qrImg = require('../assets/images/qr.png');
-
 const SetupScreen = ({ navigation }) => {
     const [mainIPAddr, setMainIPAddr] = useState("192.168.1.100");
     const [fromIpAddr, setFromIpAddr] = useState("192.168.1.100");
@@ -56,6 +57,7 @@ const SetupScreen = ({ navigation }) => {
     const [baseURL, setBaseURL] = useState(`http://${mainIPAddr}:${port}`);
     const [showIPRangeModal, setShowIPRangeModal] = useState(false);
     const [scanningIPs, setScanningIPs] = useState(false);
+    const [showQRScannerModel, setShowQRScannerModel] = useState(false);
 
     function reasignBaseURL(newipaddr, newport) {
         setBaseURL(`http://${newipaddr}:${newport}`);
@@ -124,11 +126,11 @@ const SetupScreen = ({ navigation }) => {
                                     'Accept': 'text/plain'
                                 }
                             })
-                            .then((response) => {
-                                found = true;
-                                resolve(ip);
-                                alert(`Found listening IP: ${ip}`);
-                            }).catch((error) => {});
+                                .then((response) => {
+                                    found = true;
+                                    resolve(ip);
+                                    alert(`Found listening IP: ${ip}`);
+                                }).catch((error) => { });
                         }
                     }
                 }
@@ -209,13 +211,19 @@ const SetupScreen = ({ navigation }) => {
                                                             setScanningIPs(false);
                                                             setShowIPRangeModal(false);
                                                         })
-                                                        .catch((ip) => {});
+                                                        .catch((ip) => { });
                                                 }}
                                             />
                                         </View>
                                 }
                             </TouchableOpacity>
                         </Modal>
+
+                        <QRScannerModal
+                            visible={showQRScannerModel}
+                            setVisible={setShowQRScannerModel}
+                            setIdentity={setIdentity}
+                        />
 
                         <InputField
                             label={"IP Address (static):"}
@@ -240,13 +248,14 @@ const SetupScreen = ({ navigation }) => {
                         <InputField
                             label={"Identity:"}
                             placeholder={"fghDhf3492t"}
+                            value={identity}
                             flexGrow={0.8}
                             onChange={txt => setIdentity(txt)}
                         />
                         <ClickableImage
                             style={{ top: 50 }}
                             image={qrImg}
-                            onTouch={() => alert("Scanning QR")}
+                            onTouch={() => setShowQRScannerModel(true)}
                         />
                     </View>
 

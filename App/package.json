@@ -30,7 +30,8 @@
     "react-native-tcp-socket": "^6.0.6",
     "react-native-webview": "13.2.2",
     "sharp": "^0.32.6",
-    "sharp-cli": "^4.1.1"
+    "sharp-cli": "^4.1.1",
+    "expo-barcode-scanner": "~12.5.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

@@ -317,3 +317,8 @@ docs/pages/versions/*/react-native/*.diff
 
 # Android
 **/android
+
+# Custom
+**/[Dd]ependencies/
+**/[Ii]ntermediate/
+**/[Bb]in/

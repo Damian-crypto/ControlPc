@@ -17,6 +17,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import RoundedButton from "../components/RoundedButton";
 import ClickableImage from "../components/ClickableImage";
 
+import QRScannerModal from "../components/QRScannerModal";
+
 const InputField = ({ label, placeholder, value, onChange, flexGrow }) => {
     return (
         <View style={{
@@ -53,12 +55,13 @@ const SettingsScreen = ({ navigation, route }) => {
     const [mainIPAddr, setMainIPAddr] = useState("192.168.1.100");
     const [fromIpAddr, setFromIpAddr] = useState("192.168.1.100");
     const [toIpAddr, setToIpAddr] = useState("192.168.1.160");
-    // const [uuid, setIdentity] = useState("");
+    const [identity, setIdentity] = useState(uuid);
     const [port, setPort] = useState("5000");
     // const [baseURL, setBaseURL] = useState(`http://${mainIPAddr}:${port}`);
     const [showIPRangeModal, setShowIPRangeModal] = useState(false);
     const [scanningIPs, setScanningIPs] = useState(false);
     const [serverVisible, setServerVisible] = useState(true);
+    const [showQRScannerModel, setShowQRScannerModel] = useState(false);
 
     function reasignBaseURL(newipaddr, newport) {
         setBaseURL(`http://${newipaddr}:${newport}`);
@@ -80,7 +83,7 @@ const SettingsScreen = ({ navigation, route }) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                uuid: uuid,
+                uuid: identity,
             })
         })
             .then((response) => {})
@@ -137,7 +140,7 @@ const SettingsScreen = ({ navigation, route }) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                uuid: uuid,
+                uuid: identity,
                 command: cmd,
             })
         })
@@ -224,6 +227,12 @@ const SettingsScreen = ({ navigation, route }) => {
                             </TouchableOpacity>
                         </Modal>
 
+                        <QRScannerModal
+                            visible={showQRScannerModel}
+                            setVisible={setShowQRScannerModel}
+                            setIdentity={setIdentity}
+                        />
+
                         <InputField
                             label={"IP Address (static):"}
                             placeholder={"192.168.1.200"}
@@ -250,14 +259,14 @@ const SettingsScreen = ({ navigation, route }) => {
                         <InputField
                             label={"Identity:"}
                             placeholder={"fghDhf3492t"}
-                            value={uuid}
+                            value={identity}
                             flexGrow={0.8}
                             onChange={txt => setIdentity(txt)}
                         />
                         <ClickableImage
                             style={{ top: 50 }}
                             image={qrImg}
-                            onTouch={() => alert("Scanning QR")}
+                            onTouch={() => setShowQRScannerModel(true)}
                         />
                     </View>
 
@@ -281,7 +290,7 @@ const SettingsScreen = ({ navigation, route }) => {
                             label={"Cancel"}
                             width={130}
                             fontSize={16}
-                            onTouch={() => navigation.navigate("Dashboard", { baseURL: baseURL, uuid: uuid })} />
+                            onTouch={() => navigation.navigate("Dashboard", { baseURL: baseURL, uuid: identity })} />
                         <RoundedButton
                             label={"Save"}
                             width={130}

@@ -1,3 +1,7 @@
+import sys
+import threading
+
+from waitress import serve
 from flask import Flask, request, json, Response, render_template
 # from flask_restful import Api, Resource
 
@@ -24,6 +28,7 @@ from utils.screen.MultipartServer import MultipartServer
 from utils.window.WindowManager import WindowManager
 from utils.process.PopenExecutor import PopenExecutor
 from utils.process.SystemExecutor import SystemExecutor
+from utils.qr.QRGenerator import QRGenerator
 
 PORT = 5000
 HOST = '0.0.0.0'
@@ -33,7 +38,7 @@ app = Flask(__name__)
 powerSuppy = PowerSupply()
 mouse = MouseController()
 keyboard = KeyboardController()
-uuid_builder = UUIDBuilder(3).add_digits().build()
+uuid_builder = UUIDBuilder(10).add_digits().build()
 screen_server = MultipartServer()
 
 invoker = Invoker()
@@ -151,10 +156,18 @@ def invalid_request_format():
 def invalid_identity():
     return Response("Invalid identity", status=403, mimetype='application/json')
 
+def show_qr():
+    QRGenerator.generate(str(__uuid), title='You identity')
+
 if __name__ == '__main__':
     __uuid = uuid_builder.generate_one()
-    # WindowManager.hide()
-    WindowManager.showMessageBox('info', 'Identity', f'Your identity is: {__uuid}')
+    if len(sys.argv) > 1 and sys.argv[1] == 'hidden':
+        WindowManager.hide()
+    qrThread = threading.Thread(target=show_qr)
+    qrThread.start()
+    # WindowManager.showMessageBox('info', 'Identity', f'Your identity is: {__uuid}')
     print(f'Use this key as your identity: {__uuid}')
 
     app.run(debug=False, host=HOST, port=PORT, threaded=True)
+    qrThread.join()
+    # serve(app, host=HOST, port=PORT)
