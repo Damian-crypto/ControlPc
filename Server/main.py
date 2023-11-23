@@ -168,6 +168,6 @@ if __name__ == '__main__':
     # WindowManager.showMessageBox('info', 'Identity', f'Your identity is: {__uuid}')
     print(f'Use this key as your identity: {__uuid}')
 
-    app.run(debug=False, host=HOST, port=PORT, threaded=True)
+    # app.run(debug=False, host=HOST, port=PORT, threaded=True)
     qrThread.join()
-    # serve(app, host=HOST, port=PORT)
+    serve(app, host=HOST, port=PORT)
