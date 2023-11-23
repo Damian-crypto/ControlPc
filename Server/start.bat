@@ -1,2 +1,2 @@
 @ECHO OFF
-python main.py hidden
+python main.py
