@@ -18,3 +18,6 @@ Python 3.7+ is recommended, ControlPc officially tested on Windows 11 and Androi
 3. Scan the QR code showing on your PC.
 4. Connect to the server.
 5. Continue...
+
+## Class Diagram
+![ControlPc-Class Diagram](https://github.com/Damian-crypto/ControlPc/assets/58256720/1ace927a-aa2e-4e84-abdd-2c09e0d707a9)
