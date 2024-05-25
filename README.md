@@ -19,5 +19,35 @@ Python 3.7+ is recommended, ControlPc officially tested on Windows 11 and Androi
 4. Connect to the server.
 5. Continue...
 
-## Class Diagram
-![ControlPc-Class Diagram](https://github.com/Damian-crypto/ControlPc/assets/58256720/1ace927a-aa2e-4e84-abdd-2c09e0d707a9)
+**3. How to use**
+### Screen 1
+![Screenshot_20240526-001156_Expo Go](https://github.com/Damian-crypto/ControlPc/assets/58256720/c84442ec-dc4f-48bc-be41-99e814ec96a6)
+
+Click Continue
+
+### Screen 2
+![Screenshot_20240526-001213_Expo Go](https://github.com/Damian-crypto/ControlPc/assets/58256720/63d5bb6f-6367-4547-8a0a-18bed3566c2a)
+
+Scan (IP Address)
+
+### Screen 3
+![Screenshot_20240526-001222_Expo Go](https://github.com/Damian-crypto/ControlPc/assets/58256720/ec50b15a-5d5e-4d43-a8c0-5392466f2c1d)
+
+1. Start Scan (Your local server)
+2. Scan QR Code (Visible on your pc. When start your local server)
+
+### Screen 4
+![Screenshot_20240526-001306_Expo Go](https://github.com/Damian-crypto/ControlPc/assets/58256720/9cf19c5d-9eab-4be2-ad93-88437d1e562a)
+
+You are good to go!
+
+### Some Screenshots
+![Screenshot_20240526-001316_Expo Go](https://github.com/Damian-crypto/ControlPc/assets/58256720/00cc635c-6c9e-4677-938e-2bdf70f363ef)
+
+![Screenshot_20240526-001401_Expo Go](https://github.com/Damian-crypto/ControlPc/assets/58256720/7703d163-c175-4648-9d65-8e436e668a1f)
+
+![Screenshot_20240526-001413_Expo Go](https://github.com/Damian-crypto/ControlPc/assets/58256720/6e02bea8-36ad-4549-9926-86b7caba411c)
+
+![Screenshot_20240526-001557_Expo Go](https://github.com/Damian-crypto/ControlPc/assets/58256720/c745f491-7baf-4200-abc8-8ac8557d850c)
+
+![Screenshot_20240526-001612_Expo Go](https://github.com/Damian-crypto/ControlPc/assets/58256720/7d35bc85-f00b-417f-9a76-0144546102f8)
