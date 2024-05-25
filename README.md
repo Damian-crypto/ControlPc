@@ -21,7 +21,7 @@ Python 3.7+ is recommended, ControlPc officially tested on Windows 11 and Androi
 
 **3. How to use**
 ### Screen 1
-![Screenshot_20240526-001156_Expo Go](https://github.com/Damian-crypto/ControlPc/assets/58256720/c84442ec-dc4f-48bc-be41-99e814ec96a6)
+<img src="https://github.com/Damian-crypto/ControlPc/assets/58256720/c84442ec-dc4f-48bc-be41-99e814ec96a6" width="400px" />
 
 Click Continue
 
