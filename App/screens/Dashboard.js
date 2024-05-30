@@ -161,6 +161,14 @@ const Dashboard = ({navigation, route}) => {
                         onTouch={() => setAboutModalVisible(true)}
                     />
                 </View>
+
+                <View style={styles.btnRow}>
+                    <DashboardIcon
+                        // label={"Geo"}
+                        icon={imgSettings}
+                        onTouch={() => navigation.navigate("Geo Location", { baseURL: baseURL, uuid: uuid })}
+                    />
+                </View>
             </SafeAreaView>
         </View>
     )

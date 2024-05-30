@@ -12,6 +12,7 @@ import Dashboard from './screens/Dashboard';
 import LiveScreen from './screens/LiveScreen';
 import TerminalScreen from './screens/TerminalScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import GeoLocationScreen from './screens/GeoLocationScreen';
 
 const NavStack = createNativeStackNavigator();
 
@@ -97,6 +98,12 @@ const App = () => {
 					<NavStack.Screen
 						name="Settings"
 						component={SettingsScreen}
+						options={{
+							headerShown: true,
+						}} />
+					<NavStack.Screen
+						name="Geo Location"
+						component={GeoLocationScreen}
 						options={{
 							headerShown: true,
 						}} />

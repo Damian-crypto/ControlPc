@@ -163,11 +163,10 @@ if __name__ == '__main__':
     __uuid = uuid_builder.generate_one()
     if len(sys.argv) > 1 and sys.argv[1] == 'hidden':
         WindowManager.hide()
-    qrThread = threading.Thread(target=show_qr)
+    qrThread = threading.Thread(target=show_qr, daemon=True)
     qrThread.start()
     # WindowManager.showMessageBox('info', 'Identity', f'Your identity is: {__uuid}')
     print(f'Use this key as your identity: {__uuid}')
 
     # app.run(debug=False, host=HOST, port=PORT, threaded=True)
-    qrThread.join()
     serve(app, host=HOST, port=PORT)
