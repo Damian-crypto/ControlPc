@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     View,
     Text,
@@ -8,16 +8,17 @@ import {
     ScrollView,
     StatusBar,
     Modal,
-    ActivityIndicator
+    ActivityIndicator,
 } from "react-native";
+import Checkbox from "expo-checkbox";
+// import { ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import RoundedButton from "../components/RoundedButton";
 import ClickableImage from "../components/ClickableImage";
 
 import QRScannerModal from "../components/QRScannerModal";
-
-const qrImg = require('../assets/images/qr.png');
+import AuthContext from "../context/AuthContext";
 
 const InputField = ({ label, placeholder, value, onChange, flexGrow }) => {
     return (
@@ -48,65 +49,67 @@ const InputField = ({ label, placeholder, value, onChange, flexGrow }) => {
     )
 };
 
-const SetupScreen = ({ navigation }) => {
-    const [mainIPAddr, setMainIPAddr] = useState("192.168.1.100");
+const SettingsScreen = ({ navigation, route }) => {
+    const authContext = useContext(AuthContext);
+    const
+        _mainIP = authContext['mainIP'],
+        _port = authContext['port'],
+        _identity = authContext['identity'];
+    const [mainIPAddress, _setMainIPAddress] = useState(_mainIP);
+    const [port, _setPort] = useState(_port);
+    const [uuid, _setUUID] = useState(_identity);
+    // const [mainIPAddr, setMainIPAddr] = useState(authContext['mainIP']);
     const [fromIpAddr, setFromIpAddr] = useState("192.168.1.100");
     const [toIpAddr, setToIpAddr] = useState("192.168.1.160");
-    const [identity, setIdentity] = useState("");
-    const [port, setPort] = useState("5000");
-    const [baseURL, setBaseURL] = useState(`http://${mainIPAddr}:${port}`);
+    // const [identity, setIdentity] = useState(authContext['identity']);
+    // const [port, setPort] = useState(authContext['port']);
+    const [baseURL, setBaseURL] = useState(authContext.getBaseURL());
     const [showIPRangeModal, setShowIPRangeModal] = useState(false);
     const [scanningIPs, setScanningIPs] = useState(false);
+    const [serverVisible, setServerVisible] = useState(true);
     const [showQRScannerModel, setShowQRScannerModel] = useState(false);
 
-    function reasignBaseURL(newipaddr, newport) {
-        setBaseURL(`http://${newipaddr}:${newport}`);
-    }
+    useEffect(() => setBaseURL(`http://${mainIPAddress}:${port}`), [mainIPAddress, port]);
 
-    async function handleConnect() {
-        await fetch(`${baseURL}/connect`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                uuid: identity,
-            })
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`Invalid request! ${response.json()["message"]}`);
-                }
-                return response.text();
-            })
-            .then(data => {
-                navigation.navigate("Dashboard", { baseURL: baseURL, uuid: identity });
-            })
-            .catch((error) => {
-                alert(`Connection failed[❌]: ${error}`);
-            });
-    }
+    const setMainIPAddress = (ip) => {
+        authContext['mainIP'] = ip;
+        _setMainIPAddress(ip);
+    };
 
-    async function handleTest() {
-        await fetch(`${baseURL}/`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'text/plain'
-            }
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    alert(`Connection failed[❌] invalid request!: ${error}`);
-                    throw new Error('Received request is not ok!');
-                }
-                return response.text();
-            })
-            .then(data => {
-                alert(`Test ok[✅]: ${data}`);
-            })
-            .catch((error) => {
-                alert(`Test failed[❌]: ${error}`);
-            });
+    const setPort = (port) => {
+        authContext['port'] = port;
+        _setPort(port);
+    };
+
+    const setUUID = (identity) => {
+        authContext['identity'] = identity;
+        _setUUID(identity);
+    };
+
+    useEffect(() => {
+        const pattern = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\:\d{1,4}/g;
+        const match = pattern.exec(baseURL);
+        const urlParts = match[0].split(':');
+
+        setMainIPAddress(urlParts[0]);
+        setPort(urlParts[1]);
+    }, []);
+
+    function handleSave() {
+        // await fetch(`${baseURL}/configured`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({
+        //         uuid: uuid,
+        //     })
+        // })
+        //     .then((response) => { })
+        //     .catch((error) => {
+        //         alert(`Not configured due to loss of connection to the server!`);
+        //     });
+        navigation.navigate('Dashboard');
     }
 
     function scanIPs(start, end) {
@@ -137,9 +140,34 @@ const SetupScreen = ({ navigation }) => {
             }
 
             if (!found) {
-                reject(mainIPAddr);
+                reject(mainIPAddress);
             }
         });
+    }
+
+    function handleServerVisibility(visible) {
+        setServerVisible(visible);
+        let cmd = 'window_';
+        if (visible === true) {
+            cmd += 'unhide';
+        } else {
+            cmd += 'hide';
+        }
+
+        fetch(`${baseURL}/command`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                uuid: uuid,
+                command: cmd,
+            })
+        })
+            .then((response) => { })
+            .catch((error) => {
+                alert(`Not configured due to loss of connection to the server!`);
+            });
     }
 
     return (
@@ -206,8 +234,7 @@ const SetupScreen = ({ navigation }) => {
                                                     setScanningIPs(true);
                                                     await scanIPs(fromIpAddr, toIpAddr)
                                                         .then((ip) => {
-                                                            setMainIPAddr(ip);
-                                                            reasignBaseURL(ip, port);
+                                                            setMainIPAddress(ip);
                                                             setScanningIPs(false);
                                                             setShowIPRangeModal(false);
                                                         })
@@ -222,24 +249,27 @@ const SetupScreen = ({ navigation }) => {
                         <QRScannerModal
                             visible={showQRScannerModel}
                             setVisible={setShowQRScannerModel}
-                            setIdentity={setIdentity}
+                            setIdentity={setUUID}
                         />
 
                         <InputField
                             label={"IP Address (static):"}
                             placeholder={"192.168.1.200"}
-                            value={mainIPAddr}
-                            onChange={setMainIPAddr}
+                            value={mainIPAddress}
+                            onChange={setMainIPAddress}
                         />
 
                         <RoundedButton
                             label={"Scan"}
+                            width={130}
+                            fontSize={16}
                             onTouch={() => setShowIPRangeModal(true)}
                         />
 
                         <InputField
                             label={"Port:"}
                             placeholder={"5000"}
+                            value={port}
                             onTouch={setPort}
                         />
                     </View>
@@ -248,27 +278,44 @@ const SetupScreen = ({ navigation }) => {
                         <InputField
                             label={"Identity:"}
                             placeholder={"fghDhf3492t"}
-                            value={identity}
+                            value={uuid}
                             flexGrow={0.8}
-                            onChange={txt => setIdentity(txt)}
+                            onChange={txt => setUUID(txt)}
                         />
                         <ClickableImage
-                            style={{ top: 50 }}
-                            image={qrImg}
+                            style={{ top: 32, color: '#000' }}
+                            icon={"qr-code-scanner"}
+                            iconSize={50}
                             onTouch={() => setShowQRScannerModel(true)}
+                        />
+                    </View>
+
+                    <View style={[styles.roundedContainer, {
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 10,
+                    }]}>
+                        <Text style={{
+                            fontSize: 20,
+                        }}>Server is visible</Text>
+                        <Checkbox
+                            value={serverVisible}
+                            onValueChange={handleServerVisibility}
+                            color={serverVisible ? 'purple' : undefined}
                         />
                     </View>
 
                     <View style={styles.btnContainer}>
                         <RoundedButton
-                            label={"Connect"}
-                            onTouch={handleConnect} />
-                        <RoundedButton
-                            label={"Test"}
-                            onTouch={handleTest} />
-                        <RoundedButton
                             label={"Cancel"}
-                            onTouch={() => navigation.navigate("Welcome")} />
+                            width={130}
+                            fontSize={16}
+                            onTouch={() => navigation.navigate("Dashboard", { baseURL: baseURL, uuid: uuid })} />
+                        <RoundedButton
+                            label={"Save"}
+                            width={130}
+                            fontSize={16}
+                            onTouch={handleSave} />
                     </View>
                 </SafeAreaView>
             </View>
@@ -296,10 +343,10 @@ const styles = StyleSheet.create({
     },
     btnContainer: {
         alignItems: 'center',
+        flexDirection: 'row',
         justifyContent: 'center',
-        flexDirection: 'column',
         gap: 10,
     }
 });
 
-export default SetupScreen;
+export default SettingsScreen;

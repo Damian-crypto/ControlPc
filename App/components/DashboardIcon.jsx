@@ -3,7 +3,10 @@ import {
     TouchableOpacity,
     StyleSheet,
     Text,
-    Image } from "react-native";
+    Image
+} from "react-native";
+
+import IconComponent from "./IconComponent";
 
 const DashboardIcon = ({
     label,
@@ -11,8 +14,9 @@ const DashboardIcon = ({
     onTouch,
     width = 100,
     height = 100,
+    iconSize = width * 3 / 4,
     borderWidth = 0
-    }) => {
+}) => {
 
     return (
         <View style={[styles.btnContainer, {
@@ -25,10 +29,16 @@ const DashboardIcon = ({
                 borderWidth: borderWidth
             }]}>
                 <TouchableOpacity style={styles.btnArea} onPress={onTouch}>
-                    <Image source={icon} />
+                    {
+                        typeof icon !== 'string'
+                        ?
+                        <Image source={icon} />
+                        :
+                        <IconComponent icon={icon} size={iconSize} color="#FFF" />
+                    }
                 </TouchableOpacity>
             </View>
-            <Text style={styles.lblStyle}>{ label }</Text>
+            <Text style={styles.lblStyle}>{label}</Text>
         </View>
     );
 };

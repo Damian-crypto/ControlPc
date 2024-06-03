@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, StyleSheet, TextInput, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import SquareButton from "../components/SquareButton";
+import AuthContext from "../context/AuthContext";
 
 const ResultComponent = ({ uniqueKey, output, error }) => {
     return (
@@ -24,7 +25,10 @@ const ResultComponent = ({ uniqueKey, output, error }) => {
 };
 
 const TerminalScreen = ({ navigation, route }) => {
-    const { baseURL, uuid } = route.params;
+    const authContext = useContext(AuthContext);
+    const baseURL = authContext.getBaseURL();
+    const uuid = authContext['identity'];
+
     const [command, setCommand] = useState('dir');
     const [resultSet, setResultSet] = useState([]);
 
@@ -44,8 +48,8 @@ const TerminalScreen = ({ navigation, route }) => {
             .then((data) => {
                 setResultSet([data["output"], ...resultSet])
             })
-            .catch((err) => {
-                alert(err);
+            .catch((error) => {
+                alert(`Connection error ${baseURL} -> ${error}`);
             });
     }
 
@@ -69,7 +73,7 @@ const TerminalScreen = ({ navigation, route }) => {
                         {
                             resultSet.map((res, i) => {
                                 return (
-                                    <ResultComponent uniqueKey={i} output={res} />
+                                    <ResultComponent key={i} uniqueKey={i} output={res} />
                                 )
                             })
                         }

@@ -2,7 +2,8 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity, Image } from "react-na
 // import { ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DashboardIcon from "../components/DashboardIcon";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import AuthContext from "../context/AuthContext";
 
 const imgPower = require('../assets/images/power.png');
 const imgSleep = require('../assets/images/sleep.png');
@@ -16,9 +17,11 @@ const imgLogo = require('../assets/app/icon.png');
 // const imgRun = require('../assets/images/zap.png');
 
 const Dashboard = ({navigation, route}) => {
-    const { baseURL, uuid } = route.params;
+    const authContext = useContext(AuthContext);
     const [ powerModalVisible, setPowerModalVisible ] = useState(false);
     const [ aboutModalVisible, setAboutModalVisible ] = useState(false);
+
+    const baseURL = authContext.getBaseURL();
 
     async function handlePower(cmd) {
         fetch(`${baseURL}/command`, {
@@ -27,7 +30,7 @@ const Dashboard = ({navigation, route}) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                uuid: uuid,
+                uuid: authContext['identity'],
                 command: cmd
             })
         })
@@ -60,19 +63,19 @@ const Dashboard = ({navigation, route}) => {
                     >
                         <DashboardIcon
                             // label={"Screenshot"}
-                            icon={imgPower}
+                            icon={"power"}
                             onTouch={() => handlePower('shutdown')}
                             borderWidth={2}
                         />
                         <DashboardIcon
                             // label={"Sleep"}
-                            icon={imgSleep}
+                            icon={"moon-outline"}
                             onTouch={() => handlePower('sleep')}
                             borderWidth={2}
                         />
                         <DashboardIcon
                             // label={"Sleep"}
-                            icon={imgRestart}
+                            icon={"refresh"}
                             onTouch={() => handlePower('restart')}
                             borderWidth={2}
                         />
@@ -129,35 +132,35 @@ const Dashboard = ({navigation, route}) => {
                 <View style={styles.btnRow}>
                     <DashboardIcon
                         // label={"Power"}
-                        icon={imgPower}
+                        icon={"power"}
                         onTouch={() => setPowerModalVisible(true)}
                     />
                     <DashboardIcon
                         // label={"Screenshot"}
-                        icon={imgCam}
-                        onTouch={() => navigation.navigate("Live Screen", { baseURL: baseURL, uuid: uuid })}
+                        icon={"camera"}
+                        onTouch={() => navigation.navigate("Live Screen")}
                     />
                     <DashboardIcon
                         // label={"Run"}
-                        icon={imgTerminal}
-                        onTouch={() => navigation.navigate("Terminal", { baseURL: baseURL, uuid: uuid }) }
+                        icon={"terminal"}
+                        onTouch={() => navigation.navigate("Terminal") }
                     />
                 </View>
 
                 <View style={styles.btnRow}>
                     <DashboardIcon
                         // label={"Power"}
-                        icon={imgSettings}
-                        onTouch={() => navigation.navigate("Settings", { baseURL: baseURL, uuid: uuid })}
+                        icon={"settings"}
+                        onTouch={() => navigation.navigate("Settings")}
                     />
                     <DashboardIcon
                         // label={"Screenshot"}
-                        icon={imgPlugin}
+                        icon={"codesandbox"}
                         onTouch={() => {}}
                     />
                     <DashboardIcon
                         // label={"Run"}
-                        icon={imgAbout}
+                        icon={"info"}
                         onTouch={() => setAboutModalVisible(true)}
                     />
                 </View>
@@ -165,8 +168,8 @@ const Dashboard = ({navigation, route}) => {
                 <View style={styles.btnRow}>
                     <DashboardIcon
                         // label={"Geo"}
-                        icon={imgSettings}
-                        onTouch={() => navigation.navigate("Geo Location", { baseURL: baseURL, uuid: uuid })}
+                        icon={"map-pin"}
+                        onTouch={() => navigation.navigate("Geo Location")}
                     />
                 </View>
             </SafeAreaView>

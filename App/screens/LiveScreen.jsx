@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { View, StyleSheet, Button, Text, TextInput, ActivityIndicator } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
 import { WebView } from 'react-native-webview';
@@ -7,6 +7,7 @@ import { Picker } from "@react-native-picker/picker";
 
 import RoundedButton from '../components/RoundedButton';
 import SquareButton from "../components/SquareButton";
+import AuthContext from "../context/AuthContext";
 
 const NativeVideoComponent = ({ streamLink }) => {
     const video = React.useRef(null);
@@ -80,7 +81,10 @@ const ModeSelector = ({ selected, onChange }) => {
 };
 
 const LiveScreen = ({ navigation, route }) => {
-    const { baseURL, uuid } = route.params;
+    const authContext = useContext(AuthContext);
+    const baseURL = authContext.getBaseURL();
+    const uuid = authContext['identity'];
+
     const [screen, setScreen] = useState(false);
     const [screenMode, setScreenMode] = useState("Screen");
     const [camPort, setCamPort] = useState(0);
@@ -129,7 +133,7 @@ const LiveScreen = ({ navigation, route }) => {
             })
             .catch((error) => {
                 setScreen(false);
-                alert(`Error occurred with live screen: ${error}`);
+                alert(`Connection error ${baseURL}: ${error}`);
             });
     }
 
@@ -156,7 +160,7 @@ const LiveScreen = ({ navigation, route }) => {
             })
             .catch((error) => {
                 setScreen(false);
-                alert(`Error occurred with live screen: ${error}`);
+                alert(`Connection error ${baseURL}: ${error}`);
             });
     }
 
