@@ -1,6 +1,7 @@
 import sys
 import threading
 
+from functools import wraps
 from waitress import serve
 from flask import Flask, request, json, Response, render_template
 # from flask_restful import Api, Resource
@@ -29,11 +30,13 @@ from utils.window.WindowManager import WindowManager
 from utils.process.PopenExecutor import PopenExecutor
 from utils.process.SystemExecutor import SystemExecutor
 from utils.qr.QRGenerator import QRGenerator
+from utils.geolocator.geolocator import GeoLocationManager
 
 PORT = 5000
 HOST = '0.0.0.0'
 
 app = Flask(__name__)
+app.config['DEBUG'] = True
 
 powerSuppy = PowerSupply()
 mouse = MouseController()
@@ -67,97 +70,112 @@ invoker.setCommand("keyboard_pressed", keyPressed)
 
 __uuid = ''
 
+
+def validate_identity(fun):
+    @wraps(fun)
+    def wrapper():
+        if request.is_json:
+            data = request.get_json()
+            uuid = ''
+            if "uuid" in data:
+                uuid = data["uuid"]
+                if uuid == __uuid:
+                    return fun()
+
+            return invalid_identity()
+
+        return invalid_request_format()
+
+    return wrapper
+
+
+def invalid_request_format():
+    return Response(b'Invalid request format', status=400)
+
+
+def invalid_identity():
+    return Response("Invalid identity", status=403, mimetype='application/json')
+
+
 @app.route('/')
 def welcome():
     return Response(f'Welcome to the ControlPc (Server is up at {HOST}:{PORT})', status=200)
 
+
 @app.route("/command", methods=["POST"])
+@validate_identity
 def command():
-    if request.is_json:
-        data = request.get_json()
-        print(data)
-        id = ''
-        if "uuid" in data:
-            id = data["uuid"]
-        if id == __uuid:
-            cmd = data["command"]
+    data = request.get_json()
+    cmd = data["command"]
 
-            if cmd[:5] == "mouse":
-                mouse.setPosition(float(data['x']), float(data['y']))
-            
-            elif cmd[:12] == "screenserver" and "camport" in data:
-                port = data["camport"]
-                if len(port) == 0 or port == '':
-                    port = int(port.strip())
-                    screen_server.set_cam_port(port)
-            
-            elif cmd[:8] == "keyboard":
-                key = data["keyCode"]
-                keyPressed.setKeyCode(key) 
+    # Mouse related pre-actions
+    if cmd[:5] == "mouse":
+        mouse.setPosition(float(data['x']), float(data['y']))
 
-            invoker.on(cmd)
-            
-            print(f"Request received: {request.get_json()['command']}")
-            return Response(f'Action invoked: {request.get_json()["command"]}', status=200)
-        else:
-            return invalid_identity()
-    
-    return invalid_request_format()
+    # Lieve screen related pre-actions
+    elif cmd[:12] == "screenserver" and "camport" in data:
+        port = data["camport"]
+        if len(port) == 0 or port == '':
+            port = int(port.strip())
+            screen_server.set_cam_port(port)
+
+    # Keyboard related pre-actions
+    elif cmd[:8] == "keyboard":
+        key = data["keyCode"]
+        keyPressed.setKeyCode(key)
+
+    invoker.on(cmd)
+
+    # print(f"Request received: {request.get_json()['command']}")
+    return Response(f'Action invoked: {request.get_json()["command"]}', status=200)
+
+
+@app.route("/connect", methods=["POST"])
+@validate_identity
+def connect():
+    return Response("Authenticated", status=200, mimetype='application/json')
+
 
 @app.route("/screensize")
-def mouseControls():
+def screen_size():
     dim = screen_server.get_screen_size()
     return json.dumps(dim)
 
-@app.route("/connect", methods=["POST"])
-def connect():
-    if request.is_json:
-        data = request.get_json()
-        # print(data)
-        id = ''
-        if "uuid" in data:
-            id = data["uuid"]
-        if id == __uuid:
-            return Response("Authenticated", status=200, mimetype='application/json')
-    
-    return invalid_identity()
 
 @app.route("/screenstream")
 def screen_stream():
     return Response(screen_server.get_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
 @app.route("/remote")
 def remote():
     return render_template('index.html')
 
-@app.route("/terminal", methods=["POST"])
-def run_in_terminal():
-    if request.is_json:
-        data = request.get_json()
-        id = ''
-        if "uuid" in data:
-            id = data["uuid"]
-        if id == __uuid:
-            cmd1 = data["primaryCmd"]
-            cmd2 = data["secondaryCmd"]
-            terminal = PopenExecutor()
-            res = terminal.run(cmd1).get_as_dictionary()
-            print(res)
 
-            return json.dumps(res)
-        
-        return invalid_identity()
-    
+@app.route("/terminal", methods=["POST"])
+@validate_identity
+def run_in_terminal():
+    data = request.get_json()
+    if "primaryCmd" in data and "secondaryCmd" in data:
+        cmd1 = data["primaryCmd"]
+        cmd2 = data["secondaryCmd"]
+        terminal = PopenExecutor()
+        res = terminal.run(cmd1).get_as_dictionary()
+
+        return json.dumps(res)
+
     return invalid_request_format()
 
-def invalid_request_format():
-    return Response(b'Invalid request format', status=400)
 
-def invalid_identity():
-    return Response("Invalid identity", status=403, mimetype='application/json')
+@app.route("/geo_location", methods=["POST"])
+@validate_identity
+def get_geo_location():
+    return json.dumps(GeoLocationManager.get_geolocation())
+
 
 def show_qr():
     QRGenerator.generate(str(__uuid), title='You identity')
+
 
 if __name__ == '__main__':
     __uuid = uuid_builder.generate_one()
