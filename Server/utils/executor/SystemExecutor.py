@@ -1,7 +1,7 @@
 import os
 
-from utils.process.ProcessExecutable import ProcessExecutable
-from utils.process.Result import Result
+from utils.executor.ProcessExecutable import ProcessExecutable
+from utils.executor.Result import Result
 
 class SystemExecutor(ProcessExecutable):
 

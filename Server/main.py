@@ -24,11 +24,13 @@ from commander.commands.ScreenServerChangeViewCommand import ScreenServerChangeV
 from commander.commands.KeyPressedCommand import KeyPressedCommand
 from commander.commands.KeyReleasedCommand import KeyReleasedCommand
 
+from utils.authentication import *
+
 from utils.authentication.UUID import UUIDBuilder
 from utils.screen.MultipartServer import MultipartServer
 from utils.window.WindowManager import WindowManager
-from utils.process.PopenExecutor import PopenExecutor
-from utils.process.SystemExecutor import SystemExecutor
+from utils.executor.PopenExecutor import PopenExecutor
+from utils.executor.SystemExecutor import SystemExecutor
 from utils.qr.QRGenerator import QRGenerator
 from utils.geolocator.geolocator import GeoLocationManager
 from utils.networking.ipaddress import IPAddress
@@ -113,7 +115,7 @@ def command():
     if cmd[:5] == "mouse":
         mouse.setPosition(float(data['x']), float(data['y']))
 
-    # Lieve screen related pre-actions
+    # Live screen related pre-actions
     elif cmd[:12] == "screenserver" and "camport" in data:
         port = data["camport"]
         if len(port) == 0 or port == '':

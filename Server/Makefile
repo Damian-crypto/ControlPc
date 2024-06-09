@@ -10,4 +10,4 @@ freeze:
 test:
     # -v for verbose
     # -s for stdout
-	.\\controlpc\\Scripts\\python.exe -m pytest -v -s tests
+	.\\controlpc\\Scripts\\python.exe -m pytest

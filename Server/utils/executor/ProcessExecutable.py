@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from utils.process.Result import Result
+from utils.executor.Result import Result
 
 class ProcessExecutable(ABC):
     
