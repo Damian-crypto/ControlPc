@@ -1,9 +1,11 @@
 import React, { useContext, useState } from "react";
-import { View, Text, StyleSheet, TextInput, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TextInput, ScrollView, ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import SquareButton from "../components/SquareButton";
 import AuthContext from "../context/AuthContext";
+import ThemeContext from "../context/ThemeContext";
+import { StatusBar } from "expo-status-bar";
 
 const ResultComponent = ({ uniqueKey, output, error }) => {
     return (
@@ -26,6 +28,7 @@ const ResultComponent = ({ uniqueKey, output, error }) => {
 
 const TerminalScreen = ({ navigation, route }) => {
     const authContext = useContext(AuthContext);
+    const themeContext = useContext(ThemeContext);
     const baseURL = authContext.getBaseURL();
     const uuid = authContext['identity'];
 
@@ -54,20 +57,24 @@ const TerminalScreen = ({ navigation, route }) => {
     }
 
     return (
-        <View style={styles.backgroundView}>
-            <View style={styles.commandInput}>
-                <TextInput style={styles.input}
-                    placeholder="Type your command here..."
-                    value={command}
-                    onChangeText={setCommand}
-                />
-                <SquareButton
-                    label={">"}
-                    width={50}
-                    onTouch={() => { sendToTerminal(command, ''); }}
-                />
-            </View>
+        <ImageBackground
+            style={styles.backgroundImage}
+            source={themeContext.bgImage}
+            blurRadius={themeContext.blurRadius}
+        >
             <SafeAreaView style={styles.subContainer}>
+                <View style={styles.commandInput}>
+                    <TextInput style={styles.input}
+                        placeholder="Type your command here..."
+                        value={command}
+                        onChangeText={setCommand}
+                    />
+                    <SquareButton
+                        label={">"}
+                        width={50}
+                        onTouch={() => { sendToTerminal(command, ''); }}
+                    />
+                </View>
                 <ScrollView>
                     <View style={styles.resultOutput}>
                         {
@@ -80,45 +87,42 @@ const TerminalScreen = ({ navigation, route }) => {
                     </View>
                 </ScrollView>
             </SafeAreaView>
-        </View>
+
+            <StatusBar style={"dark"} />
+        </ImageBackground>
     )
 };
 
 const styles = StyleSheet.create({
-    backgroundView: {
+    backgroundImage: {
         flex: 1,
-        backgroundColor: 'black',
-        padding: 15,
+        // borderWidth: 1,
+        // borderColor: 'red',
     },
     subContainer: {
-        // flex: 1,
-        // justifyContent: 'center',
-        // alignItems: 'center',
-        // padding: 15,
+        flex: 1,
+        marginTop: 60,
+        padding: 5,
     },
     commandInput: {
-        // borderWidth: 1,
-        // borderColor: '#ff0',
-        // flex: 1,
         flexDirection: 'row',
     },
     input: {
         flex: 1,
         borderColor: '#fff',
-        // borderWidth: 1,
         borderBottomWidth: 2,
         backgroundColor: '#333',
         color: '#0f0',
         height: 50,
         fontFamily: 'monospace',
         fontWeight: 'bold',
+        padding: 5,
     },
     resultOutput: {
+        flex: 1,
+        marginBottom: 100,
         // borderWidth: 1,
         // borderColor: '#ff0',
-        flex: 1,
-        // flexDirection: 'row',
-        marginBottom: 100,
     },
 });
 

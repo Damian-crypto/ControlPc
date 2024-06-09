@@ -1,36 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { Text, Modal, StyleSheet, TouchableOpacity } from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { Text, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 
 import RoundedButton from './RoundedButton';
 
-const QRScannerModal = ({ setIdentity, visible, setVisible }) => {
-    const [hasPermission, setHasPermission] = useState(null);
+const QRScannerModal = ({ setData, visible, setVisible }) => {
+    const [permission, requestPermission] = useCameraPermissions();
     const [scanned, setScanned] = useState(false);
 
-    useEffect(() => {
-        const getQRScannerPersmissions = async () => {
-            const { status } = await BarCodeScanner.requestPermissionsAsync();
-            setHasPermission(status === 'granted');
-        };
+    if (!permission) {
+        // Camera permissions are still loading.
+        return <View />;
+    }
 
-        getQRScannerPersmissions();
-    }, []);
+    if (!permission.granted) {
+        // Camera permissions are not granted yet.
+        return (
+            <View style={styles.container}>
+                <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
+                <Button onPress={requestPermission} title="grant permission" />
+            </View>
+        );
+    }
 
-    const onQRScanned = ({type, data}) => {
+    const onQRScanned = ({ type, data }) => {
         setScanned(true);
-        // console.log(`Code scanned with type ${type}, and data is ${data}`);
-        setIdentity(data);
+        setData(data);
         setVisible(false);
     };
-
-    if (hasPermission === null) {
-        return <Text>The app does not have permission to access your camera.</Text>;
-    }
-
-    if (hasPermission === false) {
-        return <Text>You have disallowed access to your camera!</Text>
-    }
 
     return (
         <Modal
@@ -38,28 +35,32 @@ const QRScannerModal = ({ setIdentity, visible, setVisible }) => {
             transparent={true}
             visible={visible}
         >
-            <TouchableOpacity style={{
-                flex: 1,
-                backgroundColor: '#fff',
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'column',
-            }}
-                onPress={() => setVisible(false)}
+            <CameraView
+                style={{ flex: 1 }}
+                barcodeScannerSettings={{
+                    barcodeTypes: ["qr"],
+                }}
+                facing={"back"}
+                onBarcodeScanned={onQRScanned}
             >
-                <BarCodeScanner
-                    style={StyleSheet.absoluteFill}
-                    onBarCodeScanned={scanned ? undefined : onQRScanned}
-                />
-                {
-                    scanned
-                    &&
-                    <RoundedButton
-                        label={"Scan Again"}
-                        onTouch={() => setScanned(false)}
-                    />
-                }
-            </TouchableOpacity>
+                <TouchableOpacity style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                }}
+                    onPress={() => setVisible(false)}
+                >
+                    {
+                        scanned
+                        &&
+                        <RoundedButton
+                            label={"Scan Again"}
+                            onTouch={() => setScanned(false)}
+                        />
+                    }
+                </TouchableOpacity>
+            </CameraView>
         </Modal>
     )
 };

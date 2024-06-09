@@ -324,3 +324,6 @@ docs/pages/versions/*/react-native/*.diff
 **/[Dd]ependencies/
 **/[Ii]ntermediate/
 **/[Bb]in/
+
+Server/controlpc/**
+Docs/**

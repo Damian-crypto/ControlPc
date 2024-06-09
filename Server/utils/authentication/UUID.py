@@ -44,11 +44,9 @@ class UUID:
             self.letters.extend(list(string.digits))
         if builder.punctuations:
             self.letters.extend(list(string.punctuation))
-        if builder.whitespaces:
-            self.letters.extend(list(string.whitespace))
         random.shuffle(self.letters)
     
-    def generate_one(self):
+    def generate_one(self) -> str:
         res = self.__generate_new()
         while res in self.used:
             res = self.__generate_new()
@@ -56,5 +54,5 @@ class UUID:
         self.used.add(res)
         return res
     
-    def __generate_new(self):
+    def __generate_new(self) -> str:
         return ''.join(random.choice(self.letters) for _ in range(self.length))

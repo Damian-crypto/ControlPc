@@ -1,4 +1,6 @@
 import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
+import { useFonts, Inter_600SemiBold } from '@expo-google-fonts/inter';
+import { LinearGradient } from "expo-linear-gradient";
 
 const RoundedButton = ({
     label,
@@ -6,7 +8,15 @@ const RoundedButton = ({
     width = 200,
     height = 50,
     fontSize = 24,
-    }) => {
+}) => {
+    let [fontsLoaded, fontError] = useFonts({
+        Inter_600SemiBold,
+    });
+
+    if (!fontsLoaded && !fontError) {
+        return null;
+    }
+
     return (
         <View style={[styles.btnStyle, styles.btnArea, {
             width: width,
@@ -18,9 +28,18 @@ const RoundedButton = ({
                 width: width,
                 height: height,
             }]} onPress={onTouch}>
-                <Text style={[styles.lblStyle, {
-                    fontSize: fontSize,
-                }]}>{ label }</Text>
+                <LinearGradient
+                    // Background Linear Gradient
+                    colors={['#fc8c79', '#ff7777', '#ff5c75']}
+                    style={[styles.btnArea, {
+                        width: width,
+                        height: height,
+                    }]}
+                >
+                    <Text style={[styles.lblStyle, { fontSize: fontSize, }]}>
+                        {label}
+                    </Text>
+                </LinearGradient>
             </TouchableOpacity>
         </View>
     );
@@ -33,10 +52,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     btnStyle: {
-        backgroundColor: '#AD00FF',
+        // backgroundColor: '#AD00FF',
     },
     lblStyle: {
         color: '#fff',
+        fontFamily: 'Inter_600SemiBold'
     },
 });
 

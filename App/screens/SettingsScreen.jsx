@@ -9,6 +9,8 @@ import {
     StatusBar,
     Modal,
     ActivityIndicator,
+    ImageBackground,
+    Dimensions
 } from "react-native";
 import Checkbox from "expo-checkbox";
 // import { ImageBackground } from "react-native";
@@ -16,41 +18,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import RoundedButton from "../components/RoundedButton";
 import ClickableImage from "../components/ClickableImage";
+import InputField from "../components/InputField";
 
 import QRScannerModal from "../components/QRScannerModal";
 import AuthContext from "../context/AuthContext";
-
-const InputField = ({ label, placeholder, value, onChange, flexGrow }) => {
-    return (
-        <View style={{
-            padding: 10,
-            flexGrow: flexGrow
-        }}>
-            <Text
-                style={{
-                    fontSize: 20,
-                }}
-            >
-                {label}
-            </Text>
-            <TextInput
-                style={{
-                    borderBottomWidth: 5,
-                    fontSize: 24,
-                }}
-
-                placeholder={placeholder}
-
-                value={value}
-
-                onChangeText={onChange}
-            />
-        </View>
-    )
-};
+import ThemeContext from "../context/ThemeContext";
 
 const SettingsScreen = ({ navigation, route }) => {
     const authContext = useContext(AuthContext);
+    const themeContext = useContext(ThemeContext);
+
     const
         _mainIP = authContext['mainIP'],
         _port = authContext['port'],
@@ -170,173 +147,207 @@ const SettingsScreen = ({ navigation, route }) => {
             });
     }
 
+    const IPScanner = () => {
+        return (
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={showIPRangeModal}
+            >
+                <TouchableOpacity style={{
+                    flex: 1,
+                    backgroundColor: '#fff',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                }}
+                    onPress={() => setShowIPRangeModal(false)}
+                >
+                    {
+                        scanningIPs
+                            ?
+                            <View>
+                                <ActivityIndicator size="large" />
+                                <Text>Scanning for IP addresses...</Text>
+                            </View>
+                            :
+                            <View>
+                                <Text
+                                    style={{
+                                        fontSize: 28,
+                                    }}
+                                >
+                                    IP Scanner
+                                </Text>
+
+                                <InputField
+                                    label={"From:"}
+                                    placeholder={"192.168.1.1"}
+                                    value={fromIpAddr}
+                                    onChange={setFromIpAddr}
+                                    fontStyles={styles.modalFonts}
+                                />
+
+                                <InputField
+                                    label={"To:"}
+                                    placeholder={"192.168.1.254"}
+                                    value={toIpAddr}
+                                    onChange={setToIpAddr}
+                                    fontStyles={styles.modalFonts}
+                                />
+
+                                <RoundedButton
+                                    label={"Start Scan"}
+                                    onTouch={async () => {
+                                        setScanningIPs(true);
+                                        await scanIPs(fromIpAddr, toIpAddr)
+                                            .then((ip) => {
+                                                setMainIPAddress(ip);
+                                                setScanningIPs(false);
+                                                setShowIPRangeModal(false);
+                                            })
+                                            .catch((error) => {
+                                                `Address Error: ${error}`
+                                            });
+                                    }}
+                                />
+                            </View>
+                    }
+                </TouchableOpacity>
+            </Modal>
+        );
+    };
+
+    const Container = () => {
+        return (
+            <SafeAreaView style={styles.safeAreaViewContainer}>
+                <View style={styles.roundedContainer}>
+                    <Text
+                        style={[styles.fontStyle, {
+                            fontSize: 28,
+                        }]}
+                    >
+                        IPv4 Range:
+                    </Text>
+
+                    <IPScanner />
+
+                    <QRScannerModal
+                        visible={showQRScannerModel}
+                        setVisible={setShowQRScannerModel}
+                        setData={(data) => {
+                            const [host, port, id] = data.split(' ');
+                            setUUID(id);
+                            setPort(port);
+                            setMainIPAddress(host);
+                        }}
+                    />
+
+                    <InputField
+                        label={"IP Address (static):"}
+                        placeholder={"192.168.1.200"}
+                        value={mainIPAddress}
+                        onChange={setMainIPAddress}
+                    />
+
+                    <RoundedButton
+                        label={"Scan"}
+                        onTouch={() => setShowIPRangeModal(true)}
+                    />
+
+                    <InputField
+                        label={"Port:"}
+                        placeholder={"5000"}
+                        value={port}
+                        onChange={setPort}
+                    />
+                </View>
+
+                <View style={[styles.roundedContainer, { flexDirection: 'row' }]}>
+                    <InputField
+                        label={"Identity:"}
+                        placeholder={"fghDhf3492t"}
+                        value={uuid}
+                        flexGrow={0.8}
+                        onChange={txt => setUUID(txt)}
+                    />
+                    <ClickableImage
+                        style={{ top: 25, color: '#FFF' }}
+                        icon={"qr-code-scanner"}
+                        iconSize={50}
+                        onTouch={() => setShowQRScannerModel(true)}
+                    />
+                </View>
+
+                <View style={[styles.roundedContainer, {
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 10,
+                }]}>
+                    <Text style={{
+                        color: '#FFF',
+                        fontSize: 20,
+                    }}>Server is visible</Text>
+                    <Checkbox
+                        value={serverVisible}
+                        onValueChange={handleServerVisibility}
+                        color={serverVisible ? 'purple' : undefined}
+                    />
+                </View>
+
+                <View style={styles.btnContainer}>
+                    <RoundedButton
+                        label={"Cancel"}
+                        width={130}
+                        fontSize={16}
+                        onTouch={() => navigation.navigate("Dashboard", { baseURL: baseURL, uuid: uuid })} />
+                    <RoundedButton
+                        label={"Save"}
+                        width={130}
+                        fontSize={16}
+                        onTouch={handleSave} />
+                </View>
+            </SafeAreaView>
+        );
+    };
+
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.backgroundView}>
-                <SafeAreaView>
-                    <View style={styles.roundedContainer}>
-                        <Text
-                            style={{
-                                fontSize: 28,
-                            }}
-                        >
-                            IPv4 Range:
-                        </Text>
+        <ImageBackground
+            style={styles.backgroundImage}
+            source={themeContext.bgImage}
+            blurRadius={themeContext.blurRadius}
+        >
+            <ScrollView style={styles.scrollViewContainer}>
 
-                        <Modal
-                            animationType="fade"
-                            transparent={true}
-                            visible={showIPRangeModal}
-                        >
-                            <TouchableOpacity style={{
-                                flex: 1,
-                                backgroundColor: '#fff',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                flexDirection: 'column',
-                            }}
-                                onPress={() => setShowIPRangeModal(false)}
-                            >
-                                {
-                                    scanningIPs
-                                        ?
-                                        <View>
-                                            <ActivityIndicator size="large" />
-                                            <Text>Scanning for IP addresses...</Text>
-                                        </View>
-                                        :
-                                        <View>
-                                            <Text
-                                                style={{
-                                                    fontSize: 28,
-                                                }}
-                                            >
-                                                IP Scanner
-                                            </Text>
-
-                                            <InputField
-                                                label={"From:"}
-                                                placeholder={"192.168.1.1"}
-                                                value={fromIpAddr}
-                                                onChange={setFromIpAddr}
-                                            />
-
-                                            <InputField
-                                                label={"To:"}
-                                                placeholder={"192.168.1.254"}
-                                                value={toIpAddr}
-                                                onChange={setToIpAddr}
-                                            />
-
-                                            <RoundedButton
-                                                label={"Start Scan"}
-                                                onTouch={async () => {
-                                                    setScanningIPs(true);
-                                                    await scanIPs(fromIpAddr, toIpAddr)
-                                                        .then((ip) => {
-                                                            setMainIPAddress(ip);
-                                                            setScanningIPs(false);
-                                                            setShowIPRangeModal(false);
-                                                        })
-                                                        .catch((ip) => { });
-                                                }}
-                                            />
-                                        </View>
-                                }
-                            </TouchableOpacity>
-                        </Modal>
-
-                        <QRScannerModal
-                            visible={showQRScannerModel}
-                            setVisible={setShowQRScannerModel}
-                            setIdentity={setUUID}
-                        />
-
-                        <InputField
-                            label={"IP Address (static):"}
-                            placeholder={"192.168.1.200"}
-                            value={mainIPAddress}
-                            onChange={setMainIPAddress}
-                        />
-
-                        <RoundedButton
-                            label={"Scan"}
-                            width={130}
-                            fontSize={16}
-                            onTouch={() => setShowIPRangeModal(true)}
-                        />
-
-                        <InputField
-                            label={"Port:"}
-                            placeholder={"5000"}
-                            value={port}
-                            onTouch={setPort}
-                        />
-                    </View>
-
-                    <View style={[styles.roundedContainer, { flexDirection: 'row' }]}>
-                        <InputField
-                            label={"Identity:"}
-                            placeholder={"fghDhf3492t"}
-                            value={uuid}
-                            flexGrow={0.8}
-                            onChange={txt => setUUID(txt)}
-                        />
-                        <ClickableImage
-                            style={{ top: 32, color: '#000' }}
-                            icon={"qr-code-scanner"}
-                            iconSize={50}
-                            onTouch={() => setShowQRScannerModel(true)}
-                        />
-                    </View>
-
-                    <View style={[styles.roundedContainer, {
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: 10,
-                    }]}>
-                        <Text style={{
-                            fontSize: 20,
-                        }}>Server is visible</Text>
-                        <Checkbox
-                            value={serverVisible}
-                            onValueChange={handleServerVisibility}
-                            color={serverVisible ? 'purple' : undefined}
-                        />
-                    </View>
-
-                    <View style={styles.btnContainer}>
-                        <RoundedButton
-                            label={"Cancel"}
-                            width={130}
-                            fontSize={16}
-                            onTouch={() => navigation.navigate("Dashboard", { baseURL: baseURL, uuid: uuid })} />
-                        <RoundedButton
-                            label={"Save"}
-                            width={130}
-                            fontSize={16}
-                            onTouch={handleSave} />
-                    </View>
-                </SafeAreaView>
-            </View>
+                <Container />
+            </ScrollView>
             <StatusBar style="auto" />
-        </ScrollView>
+        </ImageBackground>
     )
 };
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#000',
-    },
-    backgroundView: {
+    scrollViewContainer: {
         flex: 1,
-        justifyContent: 'center',
-        paddingTop: 10,
-        paddingBottom: 10,
-        backgroundColor: '#000',
+        // borderWidth: 1,
+        // borderColor: 'yellow',
+    },
+    backgroundImage: {
+        flex: 1,
+        // borderWidth: 4,
+        // borderColor: 'red',
+    },
+    safeAreaViewContainer: {
+        flex: 1,
+        marginTop: 60,
+        // borderWidth: 4,
+        // borderColor: 'blue',
     },
     roundedContainer: {
-        backgroundColor: '#fff',
+        backgroundColor: '#00000050',
+        borderRadius: 20,
+        borderWidth: 2,
+        borderColor: '#55555550',
         borderRadius: 10,
         padding: 10,
         margin: 10,
@@ -346,6 +357,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         gap: 10,
+    },
+    fontStyle: {
+        color: '#fff',
+    },
+    modalFonts: {
+        color: '#000',
     }
 });
 

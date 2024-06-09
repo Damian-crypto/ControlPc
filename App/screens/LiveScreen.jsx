@@ -8,6 +8,8 @@ import { Picker } from "@react-native-picker/picker";
 import RoundedButton from '../components/RoundedButton';
 import SquareButton from "../components/SquareButton";
 import AuthContext from "../context/AuthContext";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const NativeVideoComponent = ({ streamLink }) => {
     const video = React.useRef(null);
@@ -184,229 +186,238 @@ const LiveScreen = ({ navigation, route }) => {
             });
     }
 
+    const ControlPanel = () => {
+        return (
+            <View style={styles.controls}>
+                <View style={styles.controlsRow}>
+                    <Text style={styles.txtStyle}>Screen Mode</Text>
+                    <ModeSelector selected={screenMode} onChange={(itemValue) => {
+                        setScreenMode(itemValue);
+                        setScreen(false);
+                    }}
+                    />
+                    <RoundedButton
+                        label={"Keyboard"}
+                        width={100}
+                        height={40}
+                        fontSize={16}
+                        onTouch={showKeyboard}
+                    />
+                </View>
+                <View style={styles.controlsRow}>
+                    <View style={styles.inputWithLabel}>
+                        <Text style={[styles.txtStyle,
+                        {
+                            // borderColor: '#f00',
+                            // borderWidth: 2,
+                        }
+                        ]}>{screenMode} Port</Text>
+                        <TextInput
+                            style={[styles.txtStyle, {
+                                margin: 10,
+                                // borderColor: '#f00',
+                                // borderWidth: 2,
+                            }]}
+                            value={camPort.toString()}
+                            onChangeText={(val) => setCamPort(parseInt(val))}
+                        />
+                    </View>
+                    <RoundedButton
+                        label={"+"}
+                        width={40}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { setCamPort(camPort + 1) }}
+                    />
+                    <RoundedButton
+                        label={"-"}
+                        width={40}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { setCamPort(Math.max(0, camPort - 1)) }}
+                    />
+                    <RoundedButton
+                        label={"Apply"}
+                        width={80}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => onViewChange(screenMode, camPort)}
+                    />
+                </View>
+            </View>
+        );
+    };
+
+    const Keyboard = () => {
+        return (
+            <View style={styles.controls}>
+                <View style={styles.controlsRow}>
+                    <TextInput style={{
+                        borderWidth: 1,
+                        borderColor: '#ff0',
+                        flex: 1,
+                        fontSize: 16,
+                        color: '#fff',
+                        textAlign: 'center',
+                        backgroundColor: '#333'
+                    }}
+                        value={keyEventValue}
+                        placeholder="Type here to send key strokes..."
+                        onChangeText={setKeyEventValue}
+                        onKeyPress={async ({ nativeEvent }) => await handleKeyEvents(nativeEvent.key)}
+                        autoFocus={true} />
+                </View>
+                <View style={styles.controlsRow}>
+                    <SquareButton
+                        style={styles.keyboardButton}
+                        label={"ESC"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('esc') }}
+                    />
+                    <SquareButton
+                        style={styles.keyboardButton}
+                        label={"HOME"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('home') }}
+                    />
+                    <SquareButton
+                        style={styles.keyboardButton}
+                        label={"ALT"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('alt') }}
+                    />
+                    <SquareButton
+                        style={styles.keyboardButton}
+                        label={"CTRL"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('ctrl') }}
+                    />
+                    <SquareButton
+                        style={styles.keyboardButton}
+                        label={"PGUP"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('pgup') }}
+                    />
+                </View>
+                <View style={styles.controlsRow}>
+                    <SquareButton
+                        style={styles.keyboardButton}
+                        label={"TAB"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('tab') }}
+                    />
+                    <SquareButton
+                        style={styles.keyboardButton}
+                        label={"END"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('end') }}
+                    />
+                    <SquareButton
+                        style={styles.keyboardButton}
+                        label={"INSRT"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('insert') }}
+                    />
+                    <SquareButton
+                        style={styles.keyboardButton}
+                        label={"🔼"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('up') }}
+                    />
+                    <SquareButton
+                        style={styles.keyboardButton}
+                        label={"PGDN"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('pgdn') }}
+                    />
+                </View>
+                <View style={styles.controlsRow}>
+                    <SquareButton
+                        customStyle={styles.keyboardButton}
+                        label={"EXIT"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={hideKeyboard}
+                    />
+                    <SquareButton
+                        customStyle={styles.keyboardButton}
+                        label={"SHFT"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('leftshift') }}
+                    />
+                    <SquareButton
+                        customStyle={styles.keyboardButton}
+                        label={"◀️"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('left') }}
+                    />
+                    <SquareButton
+                        customStyle={styles.keyboardButton}
+                        label={"🔽"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('down') }}
+                    />
+                    <SquareButton
+                        customStyle={styles.keyboardButton}
+                        label={"▶️"}
+                        width={60}
+                        height={40}
+                        fontSize={16}
+                        onTouch={() => { handleKeyEvents('right') }}
+                    />
+                </View>
+            </View>
+        );
+    };
+
     return (
         <View style={styles.container}>
-            {
-                screen
-                    ?
-                    screenMode === "Screen"
+            <SafeAreaView style={styles.safeAreaViewContainer}>
+                {
+                    screen
                         ?
-                        <WebViewComponent targetURL={baseURL} webViewRef={webViewRef} html={true} uuid={uuid} />
+                        screenMode === "Screen"
+                            ?
+                            <WebViewComponent targetURL={baseURL} webViewRef={webViewRef} html={true} uuid={uuid} />
+                            :
+                            <WebViewComponent targetURL={`${baseURL}/screenstream`} webViewRef={webViewRef} html={false} />
                         :
-                        <WebViewComponent targetURL={`${baseURL}/screenstream`} webViewRef={webViewRef} html={false} />
-                    :
-                    <View>
-                        <ActivityIndicator size="large" />
-                        <Text style={styles.txtStyle}>Connecting...</Text>
-                    </View>
-            }
+                        <View>
+                            <ActivityIndicator size="large" />
+                            <Text style={styles.txtStyle}>Connecting...</Text>
+                        </View>
+                }
 
-            {
-                visibleControlsPanel
-                    ?
-                    <View style={styles.controls}>
-                        <View style={styles.controlsRow}>
-                            <Text style={styles.txtStyle}>Screen Mode</Text>
-                            <ModeSelector selected={screenMode} onChange={(itemValue) => {
-                                setScreenMode(itemValue);
-                                setScreen(false);
-                            }}
-                            />
-                            <RoundedButton
-                                label={"Keyboard"}
-                                width={100}
-                                height={40}
-                                fontSize={16}
-                                onTouch={showKeyboard}
-                            />
-                        </View>
-                        <View style={styles.controlsRow}>
-                            <View style={styles.inputWithLabel}>
-                                <Text style={[styles.txtStyle,
-                                {
-                                    // borderColor: '#f00',
-                                    // borderWidth: 2,
-                                }
-                                ]}>{screenMode} Port</Text>
-                                <TextInput
-                                    style={[styles.txtStyle, {
-                                        margin: 10,
-                                        // borderColor: '#f00',
-                                        // borderWidth: 2,
-                                    }]}
-                                    value={camPort.toString()}
-                                    onChangeText={(val) => setCamPort(parseInt(val))}
-                                />
-                            </View>
-                            <RoundedButton
-                                label={"+"}
-                                width={40}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { setCamPort(camPort + 1) }}
-                            />
-                            <RoundedButton
-                                label={"-"}
-                                width={40}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { setCamPort(Math.max(0, camPort - 1)) }}
-                            />
-                            <RoundedButton
-                                label={"Apply"}
-                                width={80}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => onViewChange(screenMode, camPort)}
-                            />
-                        </View>
-                    </View>
-                    :
-                    <View style={styles.controls}>
-                        <View style={styles.controlsRow}>
-                            <TextInput style={{
-                                borderWidth: 1,
-                                borderColor: '#ff0',
-                                flex: 1,
-                                fontSize: 16,
-                                color: '#fff',
-                                textAlign: 'center',
-                                backgroundColor: '#333'
-                            }}
-                            value={keyEventValue}
-                            placeholder="Type here to send key strokes..."
-                            onChangeText={setKeyEventValue}
-                            onKeyPress={async ({ nativeEvent }) => await handleKeyEvents(nativeEvent.key) }
-                            autoFocus={true} />
-                        </View>
-                        <View style={styles.controlsRow}>
-                            <SquareButton
-                                style={styles.keyboardButton}
-                                label={"ESC"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={ () => { handleKeyEvents('esc') }}
-                            />
-                            <SquareButton
-                                style={styles.keyboardButton}
-                                label={"HOME"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { handleKeyEvents('home') }}
-                            />
-                            <SquareButton
-                                style={styles.keyboardButton}
-                                label={"ALT"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { handleKeyEvents('alt') }}
-                            />
-                            <SquareButton
-                                style={styles.keyboardButton}
-                                label={"CTRL"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { handleKeyEvents('ctrl') }}
-                            />
-                            <SquareButton
-                                style={styles.keyboardButton}
-                                label={"PGUP"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { handleKeyEvents('pgup') }}
-                            />
-                        </View>
-                        <View style={styles.controlsRow}>
-                            <SquareButton
-                                style={styles.keyboardButton}
-                                label={"TAB"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { handleKeyEvents('tab') }}
-                            />
-                            <SquareButton
-                                style={styles.keyboardButton}
-                                label={"END"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { handleKeyEvents('end') }}
-                            />
-                            <SquareButton
-                                style={styles.keyboardButton}
-                                label={"INSRT"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { handleKeyEvents('insert') }}
-                            />
-                            <SquareButton
-                                style={styles.keyboardButton}
-                                label={"🔼"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { handleKeyEvents('up') }}
-                            />
-                            <SquareButton
-                                style={styles.keyboardButton}
-                                label={"PGDN"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { handleKeyEvents('pgdn') }}
-                            />
-                        </View>
-                        <View style={styles.controlsRow}>
-                            <SquareButton
-                                customStyle={styles.keyboardButton}
-                                label={"EXIT"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={hideKeyboard}
-                            />
-                            <SquareButton
-                                customStyle={styles.keyboardButton}
-                                label={"SHFT"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { handleKeyEvents('leftshift') }}
-                            />
-                            <SquareButton
-                                customStyle={styles.keyboardButton}
-                                label={"◀️"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { handleKeyEvents('left') }}
-                            />
-                            <SquareButton
-                                customStyle={styles.keyboardButton}
-                                label={"🔽"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { handleKeyEvents('down') }}
-                            />
-                            <SquareButton
-                                customStyle={styles.keyboardButton}
-                                label={"▶️"}
-                                width={60}
-                                height={40}
-                                fontSize={16}
-                                onTouch={() => { handleKeyEvents('right') }}
-                            />
-                        </View>
-                    </View>
-            }
+                {visibleControlsPanel ? <ControlPanel /> : <Keyboard />}
+            </SafeAreaView>
+            <StatusBar style="dark" />
         </View>
     );
 };
@@ -414,11 +425,14 @@ const LiveScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    safeAreaViewContainer: {
+        flex: 1,
         justifyContent: 'center',
-        // backgroundColor: '#ecf0f1',
         color: '#fff',
         backgroundColor: '#000',
         padding: 5,
+        marginTop: 60,
     },
     modeSelector: {
         backgroundColor: '#fff',

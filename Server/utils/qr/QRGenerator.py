@@ -4,7 +4,7 @@ import cv2
 class QRGenerator:
 
     @staticmethod
-    def generate(content: str, scale: int=8, title: str = 'QR Code'):
+    def generate(content: str, scale: int=8, title: str = 'QR Code') -> None:
         url = pyqrcode.create(content)
         url.png(file='QR.png', scale=scale)
 

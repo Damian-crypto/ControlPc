@@ -15,7 +15,7 @@ const DashboardIcon = ({
     width = 100,
     height = 100,
     iconSize = width * 3 / 4,
-    borderWidth = 0
+    borderWidth = 2
 }) => {
 
     return (
@@ -23,18 +23,19 @@ const DashboardIcon = ({
             width: width + 20,
             height: height + 50
         }]}>
-            <View style={[styles.btnStyle, styles.btnArea, {
+            <View style={[styles.btnStyle, {
                 width: width,
                 height: height,
-                borderWidth: borderWidth
             }]}>
-                <TouchableOpacity style={styles.btnArea} onPress={onTouch}>
+                <TouchableOpacity style={[styles.btnArea, {
+                    borderWidth: borderWidth,
+                }]} onPress={onTouch}>
                     {
                         typeof icon !== 'string'
-                        ?
-                        <Image source={icon} />
-                        :
-                        <IconComponent icon={icon} size={iconSize} color="#FFF" />
+                            ?
+                            <Image source={icon} />
+                            :
+                            <IconComponent icon={icon} size={iconSize} color="#FFF" />
                     }
                 </TouchableOpacity>
             </View>
@@ -51,13 +52,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     btnArea: {
-        borderRadius: 10,
+        padding: 10,
+        borderRadius: 20,
+        borderColor: '#55555550',
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#00000050'
     },
     btnStyle: {
         borderColor: '#fff',
-        backgroundColor: '#000',
+        backgroundColor: '#00000000',
     },
     lblStyle: {
         color: '#fff',

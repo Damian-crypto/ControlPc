@@ -31,6 +31,7 @@ from utils.process.PopenExecutor import PopenExecutor
 from utils.process.SystemExecutor import SystemExecutor
 from utils.qr.QRGenerator import QRGenerator
 from utils.geolocator.geolocator import GeoLocationManager
+from utils.networking.ipaddress import IPAddress
 
 PORT = 5000
 HOST = '0.0.0.0'
@@ -174,7 +175,8 @@ def get_geo_location():
 
 
 def show_qr():
-    QRGenerator.generate(str(__uuid), title='You identity')
+    localip = IPAddress.get_local_ip()
+    QRGenerator.generate(f"{localip} {PORT} {__uuid}", title='You identity')
 
 
 if __name__ == '__main__':

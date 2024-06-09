@@ -1,25 +1,21 @@
-import { View, Text, StyleSheet, Modal, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, Modal, TouchableOpacity, Image, StatusBar, ImageBackground, ScrollView } from "react-native";
 // import { ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DashboardIcon from "../components/DashboardIcon";
+import Svg, { Defs, RadialGradient, Stop, Ellipse } from "react-native-svg";
 import { useContext, useState } from "react";
 import AuthContext from "../context/AuthContext";
 
-const imgPower = require('../assets/images/power.png');
-const imgSleep = require('../assets/images/sleep.png');
-const imgRestart = require('../assets/images/restart.png');
-const imgCam = require('../assets/images/camera.png');
-const imgSettings = require('../assets/images/settings.png');
-const imgPlugin = require('../assets/images/box.png');
-const imgTerminal = require('../assets/images/terminal.png');
-const imgAbout = require('../assets/images/info.png');
-const imgLogo = require('../assets/app/icon.png');
-// const imgRun = require('../assets/images/zap.png');
+import ClickableImage from "../components/ClickableImage";
+import ThemeContext from "../context/ThemeContext";
 
-const Dashboard = ({navigation, route}) => {
+const imgLogo = require('../assets/app/icon.png');
+
+const Dashboard = ({ navigation, route }) => {
     const authContext = useContext(AuthContext);
-    const [ powerModalVisible, setPowerModalVisible ] = useState(false);
-    const [ aboutModalVisible, setAboutModalVisible ] = useState(false);
+    const themeContext = useContext(ThemeContext);
+    const [powerModalVisible, setPowerModalVisible] = useState(false);
+    const [aboutModalVisible, setAboutModalVisible] = useState(false);
 
     const baseURL = authContext.getBaseURL();
 
@@ -34,18 +30,18 @@ const Dashboard = ({navigation, route}) => {
                 command: cmd
             })
         })
-        .then((response) => response.json())
-        .then((data) => {
-            alert(`Power data received: ${data['message']}`);
-        })
-        .catch((error) => {
-            alert(`Error occurred with power: ${error}`);
-        });
+            .then((response) => response.json())
+            .then((data) => {
+                alert(`Power data received: ${data['message']}`);
+            })
+            .catch((error) => {
+                alert(`Error occurred with power: ${error}`);
+            });
     }
 
-    return(
-        <View style={styles.backgroundView}>
-            <SafeAreaView style={styles.container}>
+    const Container = () => {
+        return (
+            <SafeAreaView style={styles.safeAreaViewContainer}>
                 <Text style={{ left: 10, color: '#fff' }}>Connected to: {baseURL}</Text>
                 <Modal
                     animationType="fade"
@@ -65,19 +61,16 @@ const Dashboard = ({navigation, route}) => {
                             // label={"Screenshot"}
                             icon={"power"}
                             onTouch={() => handlePower('shutdown')}
-                            borderWidth={2}
                         />
                         <DashboardIcon
                             // label={"Sleep"}
                             icon={"moon-outline"}
                             onTouch={() => handlePower('sleep')}
-                            borderWidth={2}
                         />
                         <DashboardIcon
                             // label={"Sleep"}
                             icon={"refresh"}
                             onTouch={() => handlePower('restart')}
-                            borderWidth={2}
                         />
                     </TouchableOpacity>
                 </Modal>
@@ -115,7 +108,7 @@ const Dashboard = ({navigation, route}) => {
                         <View style={{
                             flexDirection: 'row',
                             gap: 10,
-                            }}>
+                        }}>
                             <Text style={{
                                 fontSize: 16,
                                 color: '#fff',
@@ -143,7 +136,7 @@ const Dashboard = ({navigation, route}) => {
                     <DashboardIcon
                         // label={"Run"}
                         icon={"terminal"}
-                        onTouch={() => navigation.navigate("Terminal") }
+                        onTouch={() => navigation.navigate("Terminal")}
                     />
                 </View>
 
@@ -156,7 +149,7 @@ const Dashboard = ({navigation, route}) => {
                     <DashboardIcon
                         // label={"Screenshot"}
                         icon={"codesandbox"}
-                        onTouch={() => {}}
+                        onTouch={() => { }}
                     />
                     <DashboardIcon
                         // label={"Run"}
@@ -173,23 +166,43 @@ const Dashboard = ({navigation, route}) => {
                     />
                 </View>
             </SafeAreaView>
-        </View>
-    )
+        );
+    };
+
+    return (
+        <ImageBackground
+            style={styles.backgroundImage}
+            source={themeContext.bgImage}
+            blurRadius={themeContext.blurRadius}
+        >
+            <ScrollView style={styles.backgroundView}>
+                <Container />
+            </ScrollView>
+            <StatusBar style={"dark"} />
+        </ImageBackground>
+    );
 };
 
 const styles = StyleSheet.create({
+    backgroundImage: {
+        flex: 1,
+        // borderColor: 'yellow',
+        // borderWidth: 1,
+    },
     backgroundView: {
         flex: 1,
-        justifyContent: 'center',
-        backgroundColor: '#000',
+        // borderColor: 'blue',
+        // borderWidth: 1,
     },
-    container: {
+    safeAreaViewContainer: {
         flex: 1,
-        backgroundColor: '#ffffff50',
+        marginTop: 60,
+        // borderColor: 'red',
+        // borderWidth: 1,
     },
     btnRow: {
         flexDirection: 'row',
-    }
+    },
 });
 
 export default Dashboard;
