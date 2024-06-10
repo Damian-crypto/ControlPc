@@ -9,8 +9,8 @@ def test_process_list():
 
 
 def test_process_list():
-    res = ProcessManager.get_process_list()
-    str_res = ''.join(res).strip()
+    lines = ProcessManager.get_process_list()
+    str_res = ''.join(''.join(line) for line in lines).strip()
     
     assert len(str_res) != 0
     assert str_res != ''

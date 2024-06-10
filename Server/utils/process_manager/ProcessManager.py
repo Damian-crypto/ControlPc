@@ -10,15 +10,28 @@ def get_processes() -> str:
     return process_list.output
 
 
+def tokenize(text: str, pattern):
+    tokens = re.search(pattern, text)
+    stripped_tokens = []
+    for token in tokens.groups():
+        stripped_tokens.append(token.strip())
+    
+    return stripped_tokens
+
+
 def get_process_list() -> List[str]:
     processes = get_processes()
 
-    processes_lines = processes.split('\n')
+    lines = processes.split('\n')
     process_list = []
 
-    for line in processes_lines[1:]:
-        pattern = r'\S+\s+'
-        res = re.sub(pattern, lambda match : match.group().strip() + ',', line)
-        process_list.append(res.split(','))
+    # lines[1:] because skip header section
+    for line in lines[1:]:
+        try:
+            tokens = tokenize(line, r'(\d+)\s+(\w+[\s\D]+)+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)')
+            process_list.append(tokens)
+        except:
+            # raise Exception(f"Invalid line found: {line}")
+            pass
     
     return process_list
