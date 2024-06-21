@@ -1,8 +1,9 @@
 import requests
 import re
 
+
 BASE_URL = 'http://localhost:5000'
-UUID = 'twecnum3jp'
+UUID = 'qgp56jtw4g'
 
 
 def test_server_is_up():
@@ -56,3 +57,18 @@ def test_geo_location():
     pattern = r'\[[+-]?(\d+(\.\d*)?), [+-]?(\d+(\.\d*)?)\]'
     assert response.status_code == 200
     assert re.match(pattern, response.text) is not None
+
+
+def test_process_list():
+    response = requests.post(BASE_URL + '/running_processes', json={'uuid': UUID})
+    assert response.status_code == 200
+
+
+def test_resource_usage():
+    response = requests.post(BASE_URL + '/get_resource_usage', json={'uuid': UUID})
+
+    stat = response.json()
+
+    assert response.status_code == 200
+    assert type(stat['cpu']) == float
+    assert type(stat['ram']) == float

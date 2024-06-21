@@ -1,25 +1,27 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
+
+import { Asset } from "expo-asset";
 import { StatusBar } from 'expo-status-bar';
-// import { StyleSheet, Text, View } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Asset } from "expo-asset";
-import * as SplashScreen from 'expo-splash-screen';
 
-import WelcomeScreen from './screens/WelcomeScreen';
-import SetupScreen from './screens/SetupScreen';
 import Dashboard from './screens/Dashboard';
 import LiveScreen from './screens/LiveScreen';
+import AuthContext from './context/AuthContext';
+import SetupScreen from './screens/SetupScreen';
+import ThemeContext from './context/ThemeContext';
+import WelcomeScreen from './screens/WelcomeScreen';
 import TerminalScreen from './screens/TerminalScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import GeoLocationScreen from './screens/GeoLocationScreen';
-
-import AuthContext from './context/AuthContext';
-import ThemeContext from './context/ThemeContext';
+import ProcessManagerScreen from './screens/ProcessManagerScreen';
+import DrawerScreen from './screens/DrawerScreen';
 
 const NavStack = createNativeStackNavigator();
 
-// SplashScreen.preventAutoHideAsync();
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
 
 const App = () => {
 	const [appIsReady, setAppIsReady] = useState(true);
@@ -41,33 +43,42 @@ const App = () => {
 		}
 	);
 
-	// useEffect(() => {
-	// 	async function prepare() {
-	// 		try {
-	// 			const images = [
-	// 				require('./assets/app/icon.png'),
-	// 			];
+	useEffect(() => {
+		async function prepare() {
+			try {
+				const images = [
+					require('./assets/app/icon.png'),
+				];
 
-	// 			const cacheImages = images.map(img => {
-	// 				return Asset.loadAsync(img);
-	// 			});
+				const cacheImages = images.map(img => {
+					return Asset.loadAsync(img);
+				});
 
-	// 			return await Promise.all(cacheImages);
-	// 		} catch (e) {
-	// 			// console.warn(e);
-	// 		} finally {
-	// 			setAppIsReady(true);
-	// 		}
-	// 	}
+				return await Promise.all(cacheImages);
+			} catch (e) {
+				// console.warn(e);
+			} finally {
+				setAppIsReady(true);
+			}
+		}
 
-	// 	prepare().then((res) => setAppIsReady(true)).catch((rej) => setAppIsReady(false));
-	// }, []);
+		prepare().then((res) => setAppIsReady(true)).catch((rej) => setAppIsReady(false));
+	}, []);
 
-	// useEffect(() => {
-	// 	if (appIsReady) {
-	// 		SplashScreen.hideAsync();
-	// 	}
-	// }, [appIsReady]);
+	const onLayoutRootView = useCallback(async () => {
+		if (appIsReady) {
+			// This tells the splash screen to hide immediately! If we call this after
+			// `setAppIsReady`, then we may see a blank screen while the app is
+			// loading its initial state and rendering its first pixels. So instead,
+			// we hide the splash screen once we know the root view has already
+			// performed layout.
+			await SplashScreen.hideAsync();
+		}
+	}, [appIsReady]);
+
+	if (!appIsReady) {
+		return null;
+	}
 
 	const navHeaderOptions = (show) => {
 		return ({
@@ -96,53 +107,52 @@ const App = () => {
 	return (
 		<AuthContext.Provider value={authContext}>
 			<ThemeContext.Provider value={themeContext}>
-				{
-					!appIsReady
-						?
-						null
-						:
-						<NavigationContainer>
-							<NavStack.Navigator>
-								<NavStack.Screen
-									name="Welcome"
-									component={WelcomeScreen}
-									options={navHeaderOptions(false)}
-								/>
-								<NavStack.Screen
-									name="Setup"
-									component={SetupScreen}
-									options={navHeaderOptions(true)}
-								/>
-								<NavStack.Screen
-									name="Dashboard"
-									component={Dashboard}
-									options={navHeaderOptions(true)}
-								/>
-								<NavStack.Screen
-									name="Live Screen"
-									component={LiveScreen}
-									options={navHeaderOptions(true)}
-								/>
-								<NavStack.Screen
-									name="Terminal"
-									component={TerminalScreen}
-									options={navHeaderOptions(true)}
-								/>
-								<NavStack.Screen
-									name="Settings"
-									component={SettingsScreen}
-									options={navHeaderOptions(true)}
-								/>
-								<NavStack.Screen
-									name="Geo Location"
-									component={GeoLocationScreen}
-									options={navHeaderOptions(true)}
-								/>
-							</NavStack.Navigator>
+				<NavigationContainer onReady={onLayoutRootView}>
+					<NavStack.Navigator>
+						<NavStack.Screen
+							name="Welcome"
+							component={WelcomeScreen}
+							options={navHeaderOptions(false)}
+						/>
+						<NavStack.Screen
+							name="Setup"
+							component={SetupScreen}
+							options={navHeaderOptions(true)}
+						/>
+						<NavStack.Screen
+							name="Drawer"
+							component={DrawerScreen}
+							options={navHeaderOptions(false)}
+						/>
+						<NavStack.Screen
+							name="Live Screen"
+							component={LiveScreen}
+							options={navHeaderOptions(true)}
+						/>
+						<NavStack.Screen
+							name="Terminal"
+							component={TerminalScreen}
+							options={navHeaderOptions(true)}
+						/>
+						<NavStack.Screen
+							name="Settings"
+							component={SettingsScreen}
+							options={navHeaderOptions(true)}
+						/>
+						<NavStack.Screen
+							name="Geo Location"
+							component={GeoLocationScreen}
+							options={navHeaderOptions(true)}
+						/>
+						<NavStack.Screen
+							name="Process Manager"
+							component={ProcessManagerScreen}
+							options={navHeaderOptions(true)}
+						/>
+					</NavStack.Navigator>
 
-							<StatusBar style="light-content" />
-						</NavigationContainer>
-				}
+					<StatusBar style="light" />
+				</NavigationContainer>
 			</ThemeContext.Provider>
 		</AuthContext.Provider>
 	);

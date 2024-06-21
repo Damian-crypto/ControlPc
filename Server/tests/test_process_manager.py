@@ -14,3 +14,15 @@ def test_process_list():
     
     assert len(str_res) != 0
     assert str_res != ''
+
+
+def test_cpu_usage():
+    res = ProcessManager.get_cpu_usage()
+
+    assert type(res) == float
+
+
+def test_ram_usage():
+    res = ProcessManager.get_ram_usage()
+
+    assert type(res) == float

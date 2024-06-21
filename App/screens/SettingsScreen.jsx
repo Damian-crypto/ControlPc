@@ -13,7 +13,6 @@ import {
     Dimensions
 } from "react-native";
 import Checkbox from "expo-checkbox";
-// import { ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import RoundedButton from "../components/RoundedButton";
@@ -35,11 +34,8 @@ const SettingsScreen = ({ navigation, route }) => {
     const [mainIPAddress, _setMainIPAddress] = useState(_mainIP);
     const [port, _setPort] = useState(_port);
     const [uuid, _setUUID] = useState(_identity);
-    // const [mainIPAddr, setMainIPAddr] = useState(authContext['mainIP']);
     const [fromIpAddr, setFromIpAddr] = useState("192.168.1.100");
     const [toIpAddr, setToIpAddr] = useState("192.168.1.160");
-    // const [identity, setIdentity] = useState(authContext['identity']);
-    // const [port, setPort] = useState(authContext['port']);
     const [baseURL, setBaseURL] = useState(authContext.getBaseURL());
     const [showIPRangeModal, setShowIPRangeModal] = useState(false);
     const [scanningIPs, setScanningIPs] = useState(false);
@@ -73,19 +69,6 @@ const SettingsScreen = ({ navigation, route }) => {
     }, []);
 
     function handleSave() {
-        // await fetch(`${baseURL}/configured`, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({
-        //         uuid: uuid,
-        //     })
-        // })
-        //     .then((response) => { })
-        //     .catch((error) => {
-        //         alert(`Not configured due to loss of connection to the server!`);
-        //     });
         navigation.navigate('Dashboard');
     }
 
@@ -218,99 +201,6 @@ const SettingsScreen = ({ navigation, route }) => {
         );
     };
 
-    const Container = () => {
-        return (
-            <SafeAreaView style={styles.safeAreaViewContainer}>
-                <View style={styles.roundedContainer}>
-                    <Text
-                        style={[styles.fontStyle, {
-                            fontSize: 28,
-                        }]}
-                    >
-                        IPv4 Range:
-                    </Text>
-
-                    <IPScanner />
-
-                    <QRScannerModal
-                        visible={showQRScannerModel}
-                        setVisible={setShowQRScannerModel}
-                        setData={(data) => {
-                            const [host, port, id] = data.split(' ');
-                            setUUID(id);
-                            setPort(port);
-                            setMainIPAddress(host);
-                        }}
-                    />
-
-                    <InputField
-                        label={"IP Address (static):"}
-                        placeholder={"192.168.1.200"}
-                        value={mainIPAddress}
-                        onChange={setMainIPAddress}
-                    />
-
-                    <RoundedButton
-                        label={"Scan"}
-                        onTouch={() => setShowIPRangeModal(true)}
-                    />
-
-                    <InputField
-                        label={"Port:"}
-                        placeholder={"5000"}
-                        value={port}
-                        onChange={setPort}
-                    />
-                </View>
-
-                <View style={[styles.roundedContainer, { flexDirection: 'row' }]}>
-                    <InputField
-                        label={"Identity:"}
-                        placeholder={"fghDhf3492t"}
-                        value={uuid}
-                        flexGrow={0.8}
-                        onChange={txt => setUUID(txt)}
-                    />
-                    <ClickableImage
-                        style={{ top: 25, color: '#FFF' }}
-                        icon={"qr-code-scanner"}
-                        iconSize={50}
-                        onTouch={() => setShowQRScannerModel(true)}
-                    />
-                </View>
-
-                <View style={[styles.roundedContainer, {
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 10,
-                }]}>
-                    <Text style={{
-                        color: '#FFF',
-                        fontSize: 20,
-                    }}>Server is visible</Text>
-                    <Checkbox
-                        value={serverVisible}
-                        onValueChange={handleServerVisibility}
-                        color={serverVisible ? 'purple' : undefined}
-                    />
-                </View>
-
-                <View style={styles.btnContainer}>
-                    <RoundedButton
-                        label={"Cancel"}
-                        width={130}
-                        fontSize={16}
-                        onTouch={() => navigation.navigate("Dashboard", { baseURL: baseURL, uuid: uuid })} />
-                    <RoundedButton
-                        label={"Save"}
-                        width={130}
-                        fontSize={16}
-                        onTouch={handleSave} />
-                </View>
-            </SafeAreaView>
-        );
-    };
-
     return (
         <ImageBackground
             style={styles.backgroundImage}
@@ -318,8 +208,94 @@ const SettingsScreen = ({ navigation, route }) => {
             blurRadius={themeContext.blurRadius}
         >
             <ScrollView style={styles.scrollViewContainer}>
+                <SafeAreaView style={styles.safeAreaViewContainer}>
+                    <View style={styles.roundedContainer}>
+                        <Text
+                            style={[styles.fontStyle, {
+                                fontSize: 28,
+                            }]}
+                        >
+                            IPv4 Range:
+                        </Text>
 
-                <Container />
+                        <IPScanner />
+
+                        <QRScannerModal
+                            visible={showQRScannerModel}
+                            setVisible={setShowQRScannerModel}
+                            setData={(data) => {
+                                const [host, port, id] = data.split(' ');
+                                setUUID(id);
+                                setPort(port);
+                                setMainIPAddress(host);
+                            }}
+                        />
+
+                        <InputField
+                            label={"IP Address (static):"}
+                            placeholder={"192.168.1.200"}
+                            value={mainIPAddress}
+                            onChange={setMainIPAddress}
+                        />
+
+                        <RoundedButton
+                            label={"Scan"}
+                            onTouch={() => setShowIPRangeModal(true)}
+                        />
+
+                        <InputField
+                            label={"Port:"}
+                            placeholder={"5000"}
+                            value={port}
+                            onChange={setPort}
+                        />
+                    </View>
+
+                    <View style={[styles.roundedContainer, { flexDirection: 'row' }]}>
+                        <InputField
+                            label={"Identity:"}
+                            placeholder={"fghDhf3492t"}
+                            value={uuid}
+                            flexGrow={0.8}
+                            onChange={txt => setUUID(txt)}
+                        />
+                        <ClickableImage
+                            style={{ top: 25, color: '#FFF' }}
+                            icon={"qr-code-scanner"}
+                            iconSize={50}
+                            onTouch={() => setShowQRScannerModel(true)}
+                        />
+                    </View>
+
+                    <View style={[styles.roundedContainer, {
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 10,
+                    }]}>
+                        <Text style={{
+                            color: '#FFF',
+                            fontSize: 20,
+                        }}>Server is visible</Text>
+                        <Checkbox
+                            value={serverVisible}
+                            onValueChange={handleServerVisibility}
+                            color={serverVisible ? 'purple' : undefined}
+                        />
+                    </View>
+
+                    <View style={styles.btnContainer}>
+                        <RoundedButton
+                            label={"Cancel"}
+                            width={130}
+                            fontSize={16}
+                            onTouch={() => navigation.navigate("Dashboard", { baseURL: baseURL, uuid: uuid })} />
+                        <RoundedButton
+                            label={"Save"}
+                            width={130}
+                            fontSize={16}
+                            onTouch={handleSave} />
+                    </View>
+                </SafeAreaView>
             </ScrollView>
             <StatusBar style="auto" />
         </ImageBackground>
@@ -339,7 +315,7 @@ const styles = StyleSheet.create({
     },
     safeAreaViewContainer: {
         flex: 1,
-        marginTop: 60,
+        // marginTop: 60,
         // borderWidth: 4,
         // borderColor: 'blue',
     },

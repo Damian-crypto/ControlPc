@@ -1,6 +1,28 @@
-import re
 from typing import List
+
+import re
+import psutil
+
 from utils.executor.PopenExecutor import PopenExecutor
+
+
+# def get_processes_countinuout() -> str:
+#     cmd = 'wmic process list brief /every:2'
+
+#     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+#     while True:
+#         output = proc.stdout.readline().decode()
+#         if output == '' and proc.poll() is not None:
+#             break
+#         if output:
+#             yield output.strip()
+
+def get_cpu_usage():
+    return psutil.cpu_percent()
+
+
+def get_ram_usage():
+    return psutil.virtual_memory().percent
 
 
 def get_processes() -> str:

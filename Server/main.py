@@ -34,6 +34,7 @@ from utils.executor.SystemExecutor import SystemExecutor
 from utils.qr.QRGenerator import QRGenerator
 from utils.geolocator.geolocator import GeoLocationManager
 from utils.networking.ipaddress import IPAddress
+from utils.process_manager import ProcessManager
 
 PORT = 5000
 HOST = '0.0.0.0'
@@ -174,6 +175,25 @@ def run_in_terminal():
 @validate_identity
 def get_geo_location():
     return json.dumps(GeoLocationManager.get_geolocation())
+
+
+@app.route('/running_processes', methods=['POST'])
+@validate_identity
+def get_running_processes():
+    proc_list = ProcessManager.get_process_list()
+
+    return json.dumps(proc_list)
+
+
+@app.route('/get_resource_usage', methods=['POST'])
+@validate_identity
+def get_resource_usage():
+    stat = {
+        'cpu': ProcessManager.get_cpu_usage(),
+        'ram': ProcessManager.get_ram_usage()
+    }
+
+    return json.dumps(stat)
 
 
 def show_qr():

@@ -74,7 +74,7 @@ const SetupScreen = ({ navigation }) => {
                 return response.text();
             })
             .then(data => {
-                navigation.navigate("Dashboard");
+                navigation.navigate("Drawer");
             })
             .catch((error) => {
                 alert(`Connection failed[❌]: ${error}`);
@@ -207,82 +207,6 @@ const SetupScreen = ({ navigation }) => {
         );
     };
 
-    const Container = () => {
-        return (
-            <SafeAreaView style={styles.safeAreaViewContainer}>
-                <View style={styles.roundedContainer}>
-                    <Text
-                        style={[styles.fontStyle, {
-                            fontSize: 28,
-                        }]}
-                    >
-                        IPv4 Range:
-                    </Text>
-
-                    <IPScanner />
-
-                    <QRScannerModal
-                        visible={showQRScannerModel}
-                        setVisible={setShowQRScannerModel}
-                        setData={(data) => {
-                            const [host, port, id] = data.split(' ');
-                            setUUID(id);
-                            setPort(port);
-                            setMainIPAddress(host);
-                        }}
-                    />
-
-                    <InputField
-                        label={"IP Address (static):"}
-                        placeholder={"192.168.1.200"}
-                        value={mainIPAddress}
-                        onChange={setMainIPAddress}
-                    />
-
-                    <RoundedButton
-                        label={"Scan"}
-                        onTouch={() => setShowIPRangeModal(true)}
-                    />
-
-                    <InputField
-                        label={"Port:"}
-                        placeholder={"5000"}
-                        value={port}
-                        onChange={setPort}
-                    />
-                </View>
-
-                <View style={[styles.roundedContainer, { flexDirection: 'row' }]}>
-                    <InputField
-                        label={"Identity:"}
-                        placeholder={"fghDhf3492t"}
-                        value={uuid}
-                        flexGrow={0.8}
-                        onChange={txt => setIdentity(txt)}
-                    />
-                    <ClickableImage
-                        style={{ top: 25, color: '#fff' }}
-                        icon={"qr-code-scanner"}
-                        iconSize={50}
-                        onTouch={() => setShowQRScannerModel(true)}
-                    />
-                </View>
-
-                <View style={styles.btnContainer}>
-                    <RoundedButton
-                        label={"Connect"}
-                        onTouch={handleConnect} />
-                    <RoundedButton
-                        label={"Test"}
-                        onTouch={handleTest} />
-                    <RoundedButton
-                        label={"Cancel"}
-                        onTouch={() => navigation.navigate("Welcome")} />
-                </View>
-            </SafeAreaView>
-        );
-    };
-
     return (
         <ImageBackground
             style={styles.backgroundImage}
@@ -290,9 +214,77 @@ const SetupScreen = ({ navigation }) => {
             blurRadius={themeContext.blurRadius}
         >
             <View style={styles.backgroundView}>
+                <SafeAreaView style={styles.safeAreaViewContainer}>
+                    <View style={styles.roundedContainer}>
+                        <Text
+                            style={[styles.fontStyle, {
+                                fontSize: 28,
+                            }]}
+                        >
+                            IPv4 Range:
+                        </Text>
 
-                <Container />
+                        <IPScanner />
 
+                        <QRScannerModal
+                            visible={showQRScannerModel}
+                            setVisible={setShowQRScannerModel}
+                            setData={(data) => {
+                                const [host, port, id] = data.split(' ');
+                                setUUID(id);
+                                setPort(port);
+                                setMainIPAddress(host);
+                            }}
+                        />
+
+                        <InputField
+                            label={"IP Address (static):"}
+                            placeholder={"192.168.1.200"}
+                            value={mainIPAddress}
+                            onChange={setMainIPAddress}
+                        />
+
+                        <RoundedButton
+                            label={"Scan"}
+                            onTouch={() => setShowIPRangeModal(true)}
+                        />
+
+                        <InputField
+                            label={"Port:"}
+                            placeholder={"5000"}
+                            value={port}
+                            onChange={setPort}
+                        />
+                    </View>
+
+                    <View style={[styles.roundedContainer, { flexDirection: 'row' }]}>
+                        <InputField
+                            label={"Identity:"}
+                            placeholder={"fghDhf3492t"}
+                            value={uuid}
+                            flexGrow={0.8}
+                            onChange={txt => setIdentity(txt)}
+                        />
+                        <ClickableImage
+                            style={{ top: 25, color: '#fff' }}
+                            icon={"qr-code-scanner"}
+                            iconSize={50}
+                            onTouch={() => setShowQRScannerModel(true)}
+                        />
+                    </View>
+
+                    <View style={styles.btnContainer}>
+                        <RoundedButton
+                            label={"Connect"}
+                            onTouch={handleConnect} />
+                        <RoundedButton
+                            label={"Test"}
+                            onTouch={handleTest} />
+                        <RoundedButton
+                            label={"Cancel"}
+                            onTouch={() => navigation.navigate("Welcome")} />
+                    </View>
+                </SafeAreaView>
             </View>
             <StatusBar style="dark" />
         </ImageBackground>
