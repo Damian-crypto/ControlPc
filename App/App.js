@@ -38,7 +38,7 @@ const App = () => {
 	const [themeContext, setThemeContext] = useState(
 		{
 			"blurRadius": 75,
-			"bgImage": require("./assets/images/bgBlue.png"),
+			"bgImage": require("./assets/images/bg_blue.png"),
 			"navColor": "red"
 		}
 	);
