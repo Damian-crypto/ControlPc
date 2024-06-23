@@ -5,6 +5,7 @@ from functools import wraps
 from waitress import serve
 from flask import Flask, request, json, Response, render_template
 # from flask_restful import Api, Resource
+from multiprocessing import Process
 
 from Invoker import Invoker
 
@@ -22,25 +23,22 @@ from commander.commands.ScreenServerStartCommand import ScreenServerStartCommand
 from commander.commands.ScreenServerEndCommand import ScreenServerEndCommand
 from commander.commands.ScreenServerChangeViewCommand import ScreenServerChangeViewCommand
 from commander.commands.KeyPressedCommand import KeyPressedCommand
-from commander.commands.KeyReleasedCommand import KeyReleasedCommand
-
-from utils.authentication import *
 
 from utils.authentication.UUID import UUIDBuilder
 from utils.screen.MultipartServer import MultipartServer
 from utils.window.WindowManager import WindowManager
 from utils.executor.PopenExecutor import PopenExecutor
-from utils.executor.SystemExecutor import SystemExecutor
 from utils.qr.QRGenerator import QRGenerator
 from utils.geolocator.geolocator import GeoLocationManager
 from utils.networking.ipaddress import IPAddress
 from utils.process_manager import ProcessManager
+from utils.configurator.configurator import Configurator
 
 PORT = 5000
 HOST = '0.0.0.0'
 
 app = Flask(__name__)
-app.config['DEBUG'] = True
+# app.config['DEBUG'] = True
 
 powerSuppy = PowerSupply()
 mouse = MouseController()
@@ -181,7 +179,6 @@ def get_geo_location():
 @validate_identity
 def get_running_processes():
     proc_list = ProcessManager.get_process_list()
-
     return json.dumps(proc_list)
 
 
@@ -192,23 +189,44 @@ def get_resource_usage():
         'cpu': ProcessManager.get_cpu_usage(),
         'ram': ProcessManager.get_ram_usage()
     }
-
     return json.dumps(stat)
 
 
-def show_qr():
-    localip = IPAddress.get_local_ip()
-    QRGenerator.generate(f"{localip} {PORT} {__uuid}", title='You identity')
+def generate_qr(configurator: Configurator) -> QRGenerator:
+    qrgen = QRGenerator()
+    localip = configurator.get_property("host_address")
+    qrgen.generate(f"{localip} {PORT} {__uuid}", title='You identity')
+
+    return qrgen
 
 
-if __name__ == '__main__':
+def show_qr(qrgen: QRGenerator):
+    qrgen.show_qr()
+
+
+def run():
+    global __uuid
     __uuid = uuid_builder.generate_one()
     if len(sys.argv) > 1 and sys.argv[1] == 'hidden':
         WindowManager.hide()
-    qrThread = threading.Thread(target=show_qr, daemon=True)
-    qrThread.start()
-    # WindowManager.showMessageBox('info', 'Identity', f'Your identity is: {__uuid}')
-    print(f'Use this key as your identity: {__uuid}')
 
-    # app.run(debug=False, host=HOST, port=PORT, threaded=True)
+    configurator = Configurator("cpcconfig.yaml")
+    configurator.set_local_property("secret_key", __uuid)
+    global HOST, PORT
+    HOST = configurator.get_property("host_address")
+    PORT = configurator.get_property("host_port")
+    generate_qr(configurator)
+
+    print(f"Serving on {HOST}:{PORT} -- {__uuid}")
+
+    from utils.gui.pyfile_runner import show_window
+    # show_window(conf)
+    t = threading.Thread(target=lambda conf: show_window(conf), args=(configurator,), daemon=True)
+    t.start()
+
+    # app.run(host=HOST, port=PORT, debug=False)
     serve(app, host=HOST, port=PORT)
+
+
+if __name__ == '__main__':
+    run()

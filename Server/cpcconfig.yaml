@@ -1,0 +1,6 @@
+control_pc:
+  server:
+    host_address: 192.168.1.101
+    host_port: '5001'
+    qr_code_path: QR.png
+    show_window: true

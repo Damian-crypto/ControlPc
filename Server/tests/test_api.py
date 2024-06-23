@@ -3,7 +3,7 @@ import re
 
 
 BASE_URL = 'http://localhost:5000'
-UUID = 'qgp56jtw4g'
+UUID = '0lzqd5f8zx'
 
 
 def test_server_is_up():
