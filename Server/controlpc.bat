@@ -1,0 +1,1 @@
+.\\controlpc\\Scripts\\pythonw.exe main.py

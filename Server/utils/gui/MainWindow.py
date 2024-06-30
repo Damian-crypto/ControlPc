@@ -109,6 +109,9 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.tree_Settings = QTreeWidget(self.tab_Settings)
         self.tree_Settings.setObjectName(u"tree_Settings")
+        self.tree_Settings.setAlternatingRowColors(False)
+        self.tree_Settings.header().setCascadingSectionResizes(False)
+        self.tree_Settings.header().setDefaultSectionSize(215)
 
         self.verticalLayout.addWidget(self.tree_Settings)
 
@@ -127,7 +130,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

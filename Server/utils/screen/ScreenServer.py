@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 # Screen Server should have
 # 1. Power button
 # 2. Change the view button (webcam, screen)

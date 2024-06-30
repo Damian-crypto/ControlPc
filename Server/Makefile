@@ -4,6 +4,9 @@ setup:
 run:
 	.\\controlpc\\Scripts\\python.exe main.py
 
+runw:
+	.\\controlpc\\Scripts\\pythonw.exe main.py
+
 freeze:
 	.\\controlpc\\Scripts\\pip.exe freeze > requirements.txt
 

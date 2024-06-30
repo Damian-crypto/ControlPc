@@ -1,25 +1,67 @@
 import win32gui, win32con
 import tkinter.messagebox
+import os
+
+import win32process
+
+
+class WindowHandler:
+    def hide_window(self):
+        pass
+
+    def unhide_window(self):
+        pass
+
+    def get_pid(self):
+        return 0
+
+
+class NativeWindow(WindowHandler):
+    def __init__(self):
+        self.this_pid = os.getpid()
+
+    def hide_window(self):
+        try:
+            def callback(hwnd, pid):
+                if win32process.GetWindowThreadProcessId(hwnd)[1] == pid:
+                    win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
+
+            win32gui.EnumWindows(callback, self.this_pid)
+        except Exception as e:
+            print(e)
+
+    def unhide_window(self):
+        try:
+            def callback(hwnd, pid):
+                if win32process.GetWindowThreadProcessId(hwnd)[1] == pid:
+                    win32gui.ShowWindow(hwnd, win32con.SW_SHOW)
+
+            win32gui.EnumWindows(callback, self.this_pid)
+        except Exception as e:
+            print(e)
+
+    def get_pid(self):
+        return self.this_pid
+
 
 class WindowManager:
 
-    @staticmethod
-    def hide():
-        try:
-            target = win32gui.GetForegroundWindow()
-            win32gui.ShowWindow(target, win32con.SW_HIDE)
-        except Exception as e:
-            print(e)
+    def __init__(self, window_handler: WindowHandler):
+        self.window = window_handler
+
+    def set_window_handler(self, window_handler: WindowHandler):
+        self.window = window_handler
+
+    def get_pid(self):
+        return self.window.get_pid()
+
+    def hide(self):
+        self.window.hide_window()
+
+    def unhide(self):
+        self.window.unhide_window()
 
     @staticmethod
-    def unhide():
-        try:
-            target = win32gui.GetForegroundWindow()
-            win32gui.ShowWindow(target, win32con.SW_SHOW)
-        except Exception as e:
-            print(e)
-
-    @staticmethod
-    def showMessageBox(type: str, title: str, message: str):
-        msgbox = getattr(tkinter.messagebox, f'show{type}')
+    def show_message_box(message_type: str, title: str, message: str):
+        msgbox = getattr(tkinter.messagebox, f'show{message_type}')
         msgbox(title, message)

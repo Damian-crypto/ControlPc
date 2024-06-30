@@ -21,7 +21,7 @@
        <enum>QTabWidget::TabPosition::West</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="documentMode">
        <bool>false</bool>
@@ -147,6 +147,15 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QTreeWidget" name="tree_Settings">
+          <property name="alternatingRowColors">
+           <bool>false</bool>
+          </property>
+          <attribute name="headerCascadingSectionResizes">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="headerDefaultSectionSize">
+           <number>215</number>
+          </attribute>
           <column>
            <property name="text">
             <string>Property</string>
@@ -174,8 +183,39 @@
      <height>33</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionLoad_Configurations"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout_ControlPc"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionAbout_ControlPc">
+   <property name="text">
+    <string>About ControlPc</string>
+   </property>
+  </action>
+  <action name="actionLoad_Configurations">
+   <property name="text">
+    <string>Load Configurations</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

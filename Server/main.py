@@ -26,13 +26,14 @@ from commander.commands.KeyPressedCommand import KeyPressedCommand
 
 from utils.authentication.UUID import UUIDBuilder
 from utils.screen.MultipartServer import MultipartServer
-from utils.window.WindowManager import WindowManager
+from utils.window.WindowManager import WindowManager, NativeWindow
 from utils.executor.PopenExecutor import PopenExecutor
 from utils.qr.QRGenerator import QRGenerator
 from utils.geolocator.geolocator import GeoLocationManager
 from utils.networking.ipaddress import IPAddress
 from utils.process_manager import ProcessManager
 from utils.configurator.configurator import Configurator
+from utils.gui.pyfile_runner import start_gui
 
 PORT = 5000
 HOST = '0.0.0.0'
@@ -45,6 +46,9 @@ mouse = MouseController()
 keyboard = KeyboardController()
 uuid_builder = UUIDBuilder(10).add_digits().build()
 screen_server = MultipartServer()
+window_handler = NativeWindow()
+configurator = Configurator("cpcconfig.yaml")
+window_manager = WindowManager(window_handler)
 
 invoker = Invoker()
 invoker.setCommand("sleep", PowerSupplySleepCommand(powerSuppy))
@@ -57,8 +61,8 @@ invoker.setCommand("mouse_singleclick_left", mouseSingleLeftClick)
 invoker.setCommand("mouse_singleclick_right", mouseSingleRightClick)
 invoker.setCommand("mouse_doubleclick_left", mouseDoubleLeftClick)
 invoker.setCommand("mouse_doubleclick_right", mouseDoubleRightClick)
-invoker.setCommand("window_hide", WindowHideCommand())
-invoker.setCommand("window_unhide", WindowUnhideCommand())
+invoker.setCommand("window_hide", WindowHideCommand(window_handler))
+invoker.setCommand("window_unhide", WindowUnhideCommand(window_handler))
 screenServerStart = ScreenServerStartCommand(screen_server)
 screenServerEnd = ScreenServerEndCommand(screen_server)
 screenServerCam = ScreenServerChangeViewCommand(screen_server, 'Camera')
@@ -117,8 +121,8 @@ def command():
     # Live screen related pre-actions
     elif cmd[:12] == "screenserver" and "camport" in data:
         port = data["camport"]
-        if len(port) == 0 or port == '':
-            port = int(port.strip())
+        if port != '':
+            port = int(port)
             screen_server.set_cam_port(port)
 
     # Keyboard related pre-actions
@@ -192,7 +196,7 @@ def get_resource_usage():
     return json.dumps(stat)
 
 
-def generate_qr(configurator: Configurator) -> QRGenerator:
+def generate_qr() -> QRGenerator:
     qrgen = QRGenerator()
     localip = configurator.get_property("host_address")
     qrgen.generate(f"{localip} {PORT} {__uuid}", title='You identity')
@@ -204,29 +208,36 @@ def show_qr(qrgen: QRGenerator):
     qrgen.show_qr()
 
 
-def run():
+def main():
     global __uuid
-    __uuid = uuid_builder.generate_one()
-    if len(sys.argv) > 1 and sys.argv[1] == 'hidden':
-        WindowManager.hide()
+    if configurator.get_property("secret_key") is None:
+        __uuid = uuid_builder.generate_one()
+    else:
+        __uuid = configurator.get_property("secret_key")
 
-    configurator = Configurator("cpcconfig.yaml")
+    if not configurator.get_property("show_window"):
+        window_manager.hide()
+
     configurator.set_local_property("secret_key", __uuid)
+    configurator.set_local_property("pid", str(window_manager.get_pid()))
     global HOST, PORT
     HOST = configurator.get_property("host_address")
     PORT = configurator.get_property("host_port")
-    generate_qr(configurator)
+    generate_qr()
 
-    print(f"Serving on {HOST}:{PORT} -- {__uuid}")
-
-    from utils.gui.pyfile_runner import show_window
-    # show_window(conf)
-    t = threading.Thread(target=lambda conf: show_window(conf), args=(configurator,), daemon=True)
+    t = threading.Thread(target=lambda app, uuid: app(uuid), args=(start_server, __uuid,))
+    t.daemon = True
     t.start()
 
+    start_gui(configurator, window_manager)
+
+
+def start_server(uuid):
+    print(f"Serving on {HOST}:{PORT} -- {uuid}")
     # app.run(host=HOST, port=PORT, debug=False)
     serve(app, host=HOST, port=PORT)
+    print(f"Stopped serving on {HOST}:{PORT} -- {uuid}")
 
 
 if __name__ == '__main__':
-    run()
+    main()

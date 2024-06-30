@@ -1,13 +1,14 @@
 from commander.Command import Command
-from utils.window.WindowManager import WindowManager
+from utils.window.WindowManager import WindowManager, WindowHandler
+
 
 class WindowUnhideCommand(Command):
 
-    def __init__(self):
-        pass
-    
+    def __init__(self, window_handler: WindowHandler):
+        self.window_manager = WindowManager(window_handler)
+
     def execute(self):
-        WindowManager.unhide()
-    
+        self.window_manager.unhide()
+
     def undo(self):
-        WindowManager.hide()
+        self.window_manager.hide()

@@ -7,6 +7,21 @@ from PySide6.QtGui import QPixmap, QIcon
 from utils.gui import MainWindow
 from utils.configurator.configurator import Configurator
 
+from utils.window.WindowManager import WindowHandler, WindowManager
+
+# When you run your application, Windows looks at the executable and tries to
+# guess what "application group" it belongs to. By default, any Python scripts
+# (including your application) are grouped under the same "Python" group, and so
+# will show the Python icon. To stop this happening, we need to provide Windows
+# with a different application identifier.
+try:
+    from ctypes import windll  # Only exists on Windows.
+
+    myappid = 'mycompany.myproduct.subproduct.version'
+    windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+except ImportError:
+    pass
+
 
 def beautify_props(config: Configurator):
     props = config.get_all_properties()
@@ -59,23 +74,25 @@ class KeyEditableDelegate(QStyledItemDelegate):
         return super().createEditor(parent, option, index)
 
 
-class MainWindow(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
+class MainWindow(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow, WindowHandler):
     def __init__(self, conf: Configurator):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         self.setWindowTitle("ControlPC Server 1.0v")
-        icon = QIcon("static/images/icon.png")
-        self.setWindowIcon(icon)
+        # icon = QIcon("static/images/icon.png")
+        # self.setWindowIcon(icon)
+
+        self.tree_Settings.setColumnWidth(0, 215)
 
         self.setup_settings_tab(conf)
         self.setup_home_tab(conf)
 
-    def setup_home_tab(self, configurator):
+    def setup_home_tab(self, configurator: Configurator):
         pixmap = QPixmap(configurator.get_property("qr_code_path"))
         self.lbl_Image.setPixmap(pixmap)
         self.lbl_ServerPort.setText(configurator.get_property("host_port"))
         self.lbl_ServerAddress.setText(configurator.get_property("host_address"))
-        self.lbl_Secret.setText(configurator.get_property("secret_key"))
+        self.lbl_Secret.setText(str(configurator.get_property("secret_key")))
 
     def setup_settings_tab(self, configurator):
         settings_page = SettingsPage(configurator)
@@ -108,9 +125,18 @@ class MainWindow(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
 
         self.tree_Settings.itemChanged.connect(callback_item_change)
 
+    def hide_window(self):
+        self.hide()
 
-def show_window(conf):
+    def unhide_window(self):
+        self.show()
+
+
+def start_gui(conf: Configurator, window_manager: WindowManager = None):
     app = QtWidgets.QApplication([])
+    app.setWindowIcon(QIcon('static/images/icon.png'))
     window = MainWindow(conf)
+    if window_manager:
+        window_manager.set_window_handler(window)
     window.show()
-    app.exec()
+    sys.exit(app.exec())

@@ -1,11 +1,13 @@
 import pyautogui
 
+
 class KeyboardController:
 
     def __init__(self):
         pass
 
     def keyPressed(self, keyCode):
+        print('Pressed', keyCode)
         pyautogui.keyDown(keyCode)
 
     def keyReleased(self, keyCode):

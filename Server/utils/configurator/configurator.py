@@ -27,10 +27,12 @@ class Configurator:
     def load_file(self):
         self.config = {}
         data = self.file_loader(self.filepath)["control_pc"]["server"]
-        self.config["show_window"] = data["show_window"]
-        self.config["qr_code_path"] = data["qr_code_path"]
-        self.config["host_address"] = data["host_address"]
-        self.config["host_port"] = data["host_port"]
+        self.config["show_window"] = data.get("show_window", None)
+        self.config["qr_code_path"] = data.get("qr_code_path", None)
+        self.config["host_address"] = data.get("host_address", None)
+        self.config["host_port"] = data.get("host_port", None)
+        self.config["run_at_startup"] = data.get("run_at_startup", None)
+        self.config["secret_key"] = data.get("secret_key", None)
 
     def write_file(self):
         data = {
@@ -41,12 +43,12 @@ class Configurator:
         self.file_writer(self.filepath, data)
 
     def get_property(self, name: str) -> Any:
-        if name in self.config:
+        if name in self.config and self.config[name] is not None:
             return self.config[name]
-        elif name in self.local_config:
+        elif name in self.local_config and self.local_config[name] is not None:
             return self.local_config[name]
 
-        return ""
+        return None
 
     def set_local_property(self, name: str, value: str):
         self.local_config[name] = value
@@ -55,5 +57,8 @@ class Configurator:
         self.config[name] = value
         self.write_file()
 
-    def get_all_properties(self) -> Dict[str, Any]:
-        return self.config
+    def get_all_properties(self) -> Dict[str, str]:
+        props = self.config.copy()
+        props.update(self.local_config)
+
+        return props
