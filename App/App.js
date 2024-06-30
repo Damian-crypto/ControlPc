@@ -17,6 +17,7 @@ import SettingsScreen from './screens/SettingsScreen';
 import GeoLocationScreen from './screens/GeoLocationScreen';
 import ProcessManagerScreen from './screens/ProcessManagerScreen';
 import DrawerScreen from './screens/DrawerScreen';
+import PluginsScreen from './screens/PluginsScreen';
 
 const NavStack = createNativeStackNavigator();
 
@@ -147,6 +148,11 @@ const App = () => {
 						<NavStack.Screen
 							name="Process Manager"
 							component={ProcessManagerScreen}
+							options={navHeaderOptions(true)}
+						/>
+						<NavStack.Screen
+							name="Plugins Manager"
+							component={PluginsScreen}
 							options={navHeaderOptions(true)}
 						/>
 					</NavStack.Navigator>

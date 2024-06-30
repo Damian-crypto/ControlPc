@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { View, StyleSheet, Button, Text, TextInput, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Button, Text, TextInput, ActivityIndicator, Keyboard } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
 import { WebView } from 'react-native-webview';
 import { useFocusEffect } from "@react-navigation/native";
@@ -87,7 +87,7 @@ const LiveScreen = ({ navigation, route }) => {
     const baseURL = authContext.getBaseURL();
     const uuid = authContext['identity'];
 
-    const [screen, setScreen] = useState(false);
+    const [screenVisible, setScreen] = useState(false);
     const [screenMode, setScreenMode] = useState("Screen");
     const [camPort, setCamPort] = useState(0);
     const [visibleControlsPanel, setVisibleControlsPanel] = useState(true);
@@ -190,7 +190,7 @@ const LiveScreen = ({ navigation, route }) => {
         return (
             <View style={styles.controls}>
                 <View style={styles.controlsRow}>
-                    <Text style={styles.txtStyle}>Screen Mode</Text>
+                    <Text style={styles.txtStyle}>Screen Mode: {screenMode}</Text>
                     <ModeSelector selected={screenMode} onChange={(itemValue) => {
                         setScreenMode(itemValue);
                         setScreen(false);
@@ -248,23 +248,23 @@ const LiveScreen = ({ navigation, route }) => {
         );
     };
 
-    const Keyboard = () => {
+    const SpecialKeyboard = () => {
         return (
             <View style={styles.controls}>
                 <View style={styles.controlsRow}>
                     <TextInput style={{
-                        borderWidth: 1,
-                        borderColor: '#ff0',
-                        flex: 1,
-                        fontSize: 16,
-                        color: '#fff',
-                        textAlign: 'center',
-                        backgroundColor: '#333'
+                        // borderWidth: 1,
+                        // borderColor: '#ff0',
+                        height: 0,
+                        // flex: 1,
+                        // fontSize: 16,
+                        // color: '#fff',
+                        // textAlign: 'center',
+                        // backgroundColor: '#333'
                     }}
                         value={keyEventValue}
                         placeholder="Type here to send key strokes..."
-                        onChangeText={setKeyEventValue}
-                        onKeyPress={async ({ nativeEvent }) => await handleKeyEvents(nativeEvent.key)}
+                        onKeyPress={(event) => { handleKeyEvents(event.nativeEvent.key) } }
                         autoFocus={true} />
                 </View>
                 <View style={styles.controlsRow}>
@@ -401,7 +401,7 @@ const LiveScreen = ({ navigation, route }) => {
         <View style={styles.container}>
             <SafeAreaView style={styles.safeAreaViewContainer}>
                 {
-                    screen
+                    screenVisible
                         ?
                         screenMode === "Screen"
                             ?
@@ -415,7 +415,7 @@ const LiveScreen = ({ navigation, route }) => {
                         </View>
                 }
 
-                {visibleControlsPanel ? <ControlPanel /> : <Keyboard />}
+                {visibleControlsPanel ? <ControlPanel /> : <SpecialKeyboard />}
             </SafeAreaView>
             <StatusBar style="dark" />
         </View>

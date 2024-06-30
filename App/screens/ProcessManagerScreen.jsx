@@ -6,7 +6,8 @@ import {
     Dimensions,
     ScrollView,
     ImageBackground,
-    TouchableOpacity
+    TouchableOpacity,
+    ActivityIndicator
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LineChart } from "react-native-chart-kit";
@@ -24,7 +25,7 @@ const RenderItem = ({ uniqueKey, res, backgroundColor, onPress }) => {
                 backgroundColor: backgroundColor,
                 margin: 20,
                 borderWidth: 2,
-                borderColor: 'red',
+                // borderColor: 'red',
             }]}
         >
             <TouchableOpacity
@@ -55,6 +56,7 @@ const ProcessManagerScreen = ({ navigation, route }) => {
     const baseURL = authContext.getBaseURL();
     const uuid = authContext['identity'];
     const [selectedId, setSelectedId] = useState(0);
+    const [loadingData, setLoadingData] = useState(false);
 
     const [resultSet, setResultSet] = useState([]);
     const [ramUsage, setRAMUsage] = useState({
@@ -119,6 +121,7 @@ const ProcessManagerScreen = ({ navigation, route }) => {
                 if (cpuUsage.datasets[0].data.length > 10) {
                     cpuUsage.datasets[0].data.splice(0, 1);
                 }
+                setLoadingData(false);
             })
             .catch((error) => {
                 alert(`Connection error ${baseURL} -> ${error}`);
@@ -126,6 +129,8 @@ const ProcessManagerScreen = ({ navigation, route }) => {
     }
 
     useEffect(() => {
+        setLoadingData(true);
+
         const intervalId = setInterval(() => {
             getRunningProcess();
             getResourceUsage();
@@ -135,8 +140,10 @@ const ProcessManagerScreen = ({ navigation, route }) => {
     }, []);
 
     const chartConfig = {
-        backgroundGradientFrom: '#1E2923',
-        backgroundGradientTo: '#08130D',
+        backgroundGradientFromOpacity: 0,
+        backgroundGradientToOpacity: 0,
+        // backgroundGradientFrom: '#1E2923',
+        // backgroundGradientTo: '#08130D',
         color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
         propsForDots: {
             r: "2",
@@ -154,38 +161,47 @@ const ProcessManagerScreen = ({ navigation, route }) => {
             blurRadius={themeContext.blurRadius}
         >
             <SafeAreaView style={styles.subContainer}>
-                <ScrollView style={styles.processList}>
-                    <View style={styles.statViewer}>
-                        <LineChart
-                            data={ramUsage}
-                            width={screenWidth}
-                            height={220}
-                            chartConfig={chartConfig}
-                            bezier
-                        />
-                        <LineChart
-                            data={cpuUsage}
-                            width={screenWidth}
-                            height={220}
-                            chartConfig={chartConfig}
-                            bezier
-                        />
-                    </View>
-                    {
-                        resultSet.map((task, i) => {
-                            const backgroundColor = selectedId == i ? '#FFFFFF50' : '#00000050';
-                            return (
-                                <RenderItem
-                                    key={i}
-                                    uniqueKey={i}
-                                    res={task}
-                                    backgroundColor={backgroundColor}
-                                    onPress={() => setSelectedId(i)}
+                {
+                    loadingData
+                        ?
+                        <View style={styles.loadingView}>
+                            <ActivityIndicator size="large" />
+                            <Text style={{ color: '#FFF' }}>Fetching resource usage...</Text>
+                        </View>
+                        :
+                        <ScrollView style={styles.processList}>
+                            <View style={styles.statViewer}>
+                                <LineChart
+                                    data={ramUsage}
+                                    width={screenWidth}
+                                    height={220}
+                                    chartConfig={chartConfig}
+                                    bezier
                                 />
-                            )
-                        })
-                    }
-                </ScrollView>
+                                <LineChart
+                                    data={cpuUsage}
+                                    width={screenWidth}
+                                    height={220}
+                                    chartConfig={chartConfig}
+                                    bezier
+                                />
+                            </View>
+                            {
+                                resultSet.map((task, i) => {
+                                    const backgroundColor = selectedId == i ? '#FFFFFF50' : '#00000050';
+                                    return (
+                                        <RenderItem
+                                            key={i}
+                                            uniqueKey={i}
+                                            res={task}
+                                            backgroundColor={backgroundColor}
+                                            onPress={() => setSelectedId(i)}
+                                        />
+                                    )
+                                })
+                            }
+                        </ScrollView>
+                }
             </SafeAreaView>
 
             <StatusBar style={"dark"} />
@@ -242,6 +258,11 @@ const styles = StyleSheet.create({
     },
     processList: {
         flex: 1,
+    },
+    loadingView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     }
 });
 

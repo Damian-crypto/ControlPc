@@ -90,8 +90,6 @@ const Dashboard = ({ navigation, route }) => {
         >
             <ScrollView style={styles.backgroundView}>
                 <SafeAreaView style={styles.safeAreaViewContainer}>
-                    <Text style={{ left: 10, color: '#fff' }}>Connected to: {baseURL}</Text>
-
                     <PowerMenuModal
                         visible={powerModalVisible}
                         setVisible={setPowerModalVisible}
@@ -100,17 +98,17 @@ const Dashboard = ({ navigation, route }) => {
 
                     <View style={styles.btnRow}>
                         <DashboardIcon
-                            // label={"Power"}
+                            label={"Power"}
                             icon={"settings-power"}
                             onTouch={() => setPowerModalVisible(true)}
                         />
                         <DashboardIcon
-                            // label={"Screenshot"}
+                            label={"Live Cam"}
                             icon={"camera"}
                             onTouch={() => navigation.navigate("Live Screen")}
                         />
                         <DashboardIcon
-                            // label={"Run"}
+                            label={"Run"}
                             icon={"terminal"}
                             onTouch={() => navigation.navigate("Terminal")}
                         />
@@ -118,21 +116,22 @@ const Dashboard = ({ navigation, route }) => {
 
                     <View style={styles.btnRow}>
                         <DashboardIcon
-                            // label={"Screenshot"}
+                            label={"Plugins"}
                             icon={"codesandbox"}
-                            onTouch={() => { }}
+                            onTouch={() => { navigation.navigate("Plugins Manager") }}
                         />
                         <DashboardIcon
-                            // label={"Geo"}
+                            label={"Location"}
                             icon={"map-pin"}
                             onTouch={() => navigation.navigate("Geo Location")}
                         />
                         <DashboardIcon
-                            // label={"Geo"}
+                            label={"Processes"}
                             icon={"tasks"}
                             onTouch={() => navigation.navigate("Process Manager")}
                         />
                     </View>
+
                 </SafeAreaView>
             </ScrollView>
             <StatusBar style="dark" />

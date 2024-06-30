@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { StyleSheet, View, ActivityIndicator, Text } from 'react-native';
 import MapView from 'react-native-maps';
-import { StyleSheet, View } from 'react-native';
-import { Marker } from 'react-native-maps';
+import { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+
 import AuthContext from '../context/AuthContext';
 
 const GeoLocationScreen = () => {
@@ -10,6 +11,7 @@ const GeoLocationScreen = () => {
     const uuid = authContext.identity;
 
     const [geoLocation, setGeoLocation] = useState([0, 0]);
+    const [loadingData, setLoadingData] = useState(false);
 
     async function getGeoLocation() {
         await fetch(`${baseURL}/geo_location`, {
@@ -29,25 +31,38 @@ const GeoLocationScreen = () => {
             })
             .then(data => {
                 setGeoLocation(data);
+                setLoadingData(false);
             })
             .catch((error) => {
                 alert(`Connection failed[❌]: ${error}`);
             });
     }
 
-    useEffect(() => { getGeoLocation(); }, []);
+    useEffect(() => {
+        setLoadingData(true);
+        getGeoLocation();
+    }, []);
 
     return (
         <View style={styles.container}>
-            <MapView style={styles.map}>
-                <Marker
-                    coordinate={{
-                        longitude: geoLocation[1],
-                        latitude: geoLocation[0]
-                    }}
-                    onPress={(e) => { console.log(e.nativeEvent) }}
-                />
-            </MapView>
+            {
+                loadingData
+                    ?
+                    <View style={styles.loadingView}>
+                        <ActivityIndicator size="large" />
+                        <Text>Fetching target location...</Text>
+                    </View>
+                    :
+                    <MapView style={styles.map} provider={PROVIDER_GOOGLE}>
+                        <Marker
+                            coordinate={{
+                                longitude: geoLocation[1],
+                                latitude: geoLocation[0]
+                            }}
+                            onPress={(e) => { console.log(e.nativeEvent) }}
+                        />
+                    </MapView>
+            }
         </View>
     );
 };
@@ -60,6 +75,11 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
+    loadingView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    }
 });
 
 export default GeoLocationScreen;

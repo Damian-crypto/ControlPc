@@ -5,13 +5,15 @@ import {
     Text,
     StyleSheet,
     ImageBackground,
-    SafeAreaView
+    SafeAreaView,
+    TouchableOpacity
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
 import ThemeContext from "../context/ThemeContext";
 
 const imgLogo = require('../assets/app/icon.png');
+const devLogo = require('../assets/images/devlogo.png');
 
 const InformationScreen = () => {
     const themeContext = useContext(ThemeContext);
@@ -23,14 +25,16 @@ const InformationScreen = () => {
             blurRadius={themeContext.blurRadius}
         >
             <SafeAreaView style={styles.subContainer}>
-                <Image
-                    source={imgLogo}
-                    style={{
-                        width: 200,
-                        height: 200,
-                        margin: 10,
-                    }}
-                />
+                <TouchableOpacity delayPressIn={0.98}>
+                    <Image
+                        source={imgLogo}
+                        style={{
+                            width: 200,
+                            height: 200,
+                            margin: 10,
+                        }}
+                    />
+                </TouchableOpacity>
                 <Text style={{
                     fontSize: 36,
                     color: '#fff',
@@ -38,8 +42,17 @@ const InformationScreen = () => {
                 <Text style={{
                     fontSize: 20,
                     color: '#fff',
-                }}>Developed by ZEUS</Text>
-                <View style={{
+                }}>Developed by</Text>
+                <Image
+                    source={devLogo}
+                    style={{
+                        width: 200,
+                        height: 200,
+                        margin: 10,
+                        borderRadius: 999
+                    }}
+                />
+                {/* <View style={{
                     flexDirection: 'column',
                     alignItems: 'center',
                     gap: 10,
@@ -53,7 +66,7 @@ const InformationScreen = () => {
                         color: '#0f0',
                         fontStyle: 'italic',
                     }}>bdamianchamel@gmail.com</Text>
-                </View>
+                </View> */}
             </SafeAreaView>
         </ImageBackground>
     );

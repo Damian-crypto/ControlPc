@@ -24,7 +24,12 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.zeus2000.ControlPc"
+      "package": "com.zeus2000.ControlPc",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyD-rv0MrwhggOzYPgY88H_8Y1xMWZPob7Y"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/icon.png"
@@ -52,6 +57,17 @@
           "fonts": [
             "node_modules/@expo-google-fonts/inter/Inter_600SemiBold.ttf"
           ]
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0",
+            "usesCleartextTraffic": true
+          }
         }
       ]
     ],

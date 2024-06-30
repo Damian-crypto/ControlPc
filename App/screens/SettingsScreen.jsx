@@ -209,6 +209,8 @@ const SettingsScreen = ({ navigation, route }) => {
         >
             <ScrollView style={styles.scrollViewContainer}>
                 <SafeAreaView style={styles.safeAreaViewContainer}>
+                <Text style={{ left: 10, color: '#fff' }}>Connected to: {baseURL}</Text>
+                
                     <View style={styles.roundedContainer}>
                         <Text
                             style={[styles.fontStyle, {
