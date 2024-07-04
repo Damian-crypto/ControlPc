@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Callable
 import yaml
 
 
@@ -22,6 +22,7 @@ class Configurator:
         self.filepath = filepath
         self.file_loader = file_loader
         self.file_writer = file_writer
+        self.on_events = {}
         self.load_file()
 
     def load_file(self):
@@ -50,14 +51,19 @@ class Configurator:
 
         return None
 
-    def set_local_property(self, name: str, value: str):
+    def set_local_property(self, name: str, value: Any):
         self.local_config[name] = value
 
-    def set_property(self, name: str, value: str):
-        self.config[name] = value
+    def set_property(self, name: str, value: Any):
+        if name in self.on_events:
+            if self.on_events[name](value):
+                self.config[name] = value
         self.write_file()
 
-    def get_all_properties(self) -> Dict[str, str]:
+    def set_on_change_event(self, property_name: str, callback: Callable[[Any], bool]) -> None:
+        self.on_events[property_name] = callback
+
+    def get_all_properties(self) -> Dict[str, Any]:
         props = self.config.copy()
         props.update(self.local_config)
 
