@@ -8,7 +8,7 @@ runw:
 	.\\controlpc\\Scripts\\pythonw.exe main.py
 
 freeze:
-	.\\controlpc\\Scripts\\pip.exe freeze > requirements.txt
+	.\\controlpc\\Scripts\\pip.exe freeze > requirements_win.txt
 
 test:
     # -v for verbose

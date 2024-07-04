@@ -1,17 +1,17 @@
 import sys
+import os
 import threading
+import platform
 
 from functools import wraps
 from waitress import serve
 from flask import Flask, request, json, Response, render_template
-# from flask_restful import Api, Resource
-from multiprocessing import Process
 
 from Invoker import Invoker
 
-from commander.receivers.PowerSupply import PowerSupply
-from commander.receivers.MouseController import MouseController
-from commander.receivers.KeyboardController import KeyboardController
+from commander.receivers.power_supply_windows_impl import PowerSupplyWindowsImpl
+from commander.receivers.mouse_controller import MouseController
+from commander.receivers.keyboard_controller import KeyboardController
 
 from commander.commands.MouseDoubleClickCommand import MouseDoubleClickCommand
 from commander.commands.MouseSingleClickCommand import MouseSingleClickCommand
@@ -26,7 +26,7 @@ from commander.commands.KeyPressedCommand import KeyPressedCommand
 
 from utils.authentication.UUID import UUIDBuilder
 from utils.screen.MultipartServer import MultipartServer
-from utils.window.WindowManager import WindowManager, NativeWindow
+from utils.window.window_handler_windows_impl import WindowManager, NativeWindowWindowsImpl
 from utils.executor.PopenExecutor import PopenExecutor
 from utils.qr.QRGenerator import QRGenerator
 from utils.geolocator.geolocator import GeoLocationManager
@@ -34,6 +34,7 @@ from utils.networking.ipaddress import IPAddress
 from utils.process_manager import ProcessManager
 from utils.configurator.configurator import Configurator
 from utils.gui.pyfile_runner import start_gui
+from utils.os_utils.system_config_windows_impl import WindowsSystemConfig
 
 PORT = 5000
 HOST = '0.0.0.0'
@@ -41,18 +42,27 @@ HOST = '0.0.0.0'
 app = Flask(__name__)
 # app.config['DEBUG'] = True
 
-powerSuppy = PowerSupply()
+configurator = Configurator("cpcconfig.yaml")
 mouse = MouseController()
 keyboard = KeyboardController()
 uuid_builder = UUIDBuilder(10).add_digits().build()
 screen_server = MultipartServer()
-window_handler = NativeWindow()
-configurator = Configurator("cpcconfig.yaml")
-window_manager = WindowManager(window_handler)
+
+power_supply = None
+system_config = None
+window_handler = None
+env_display = os.environ["DISPLAY"]
+if platform.system() == "Windows":
+    power_supply = PowerSupplyWindowsImpl()
+    system_config = WindowsSystemConfig(configurator)
+    if env_display:
+        window_handler = NativeWindowWindowsImpl()
+if env_display:
+    window_manager = WindowManager(window_handler)
 
 invoker = Invoker()
-invoker.setCommand("sleep", PowerSupplySleepCommand(powerSuppy))
-invoker.setCommand("shutdown", PowerSupplyShutdownCommand(powerSuppy))
+invoker.setCommand("sleep", PowerSupplySleepCommand(power_supply))
+invoker.setCommand("shutdown", PowerSupplyShutdownCommand(power_supply))
 mouseSingleLeftClick = MouseSingleClickCommand(mouse, 'left')
 mouseSingleRightClick = MouseSingleClickCommand(mouse, 'right')
 mouseDoubleLeftClick = MouseDoubleClickCommand(mouse, 'left')
@@ -116,7 +126,7 @@ def command():
 
     # Mouse related pre-actions
     if cmd[:5] == "mouse":
-        mouse.setPosition(float(data['x']), float(data['y']))
+        mouse.set_position(float(data['x']), float(data['y']))
 
     # Live screen related pre-actions
     elif cmd[:12] == "screenserver" and "camport" in data:
@@ -218,7 +228,17 @@ def main():
     if not configurator.get_property("show_window"):
         window_manager.hide()
 
+    def run_at_startup(value) -> bool:
+        success = False
+        if value:
+            success = system_config.add_to_startup()
+        else:
+            success = system_config.remove_from_startup()
+
+        return success
+
     configurator.set_local_property("secret_key", __uuid)
+    configurator.set_on_change_event("run_at_startup", run_at_startup)
     configurator.set_local_property("pid", str(window_manager.get_pid()))
     global HOST, PORT
     HOST = configurator.get_property("host_address")
