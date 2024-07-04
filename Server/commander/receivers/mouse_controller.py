@@ -1,5 +1,6 @@
 import pyautogui
 
+
 class MouseController:
 
     def __init__(self):
@@ -12,12 +13,12 @@ class MouseController:
         self.mouseX = x
         self.mouseY = y
         pyautogui.move(self.mouseX, self.mouseY)
-    
+
     def singleClick(self, btn):
         self.dragging = True
         self.prvButton = btn
         pyautogui.click(self.mouseX, self.mouseY, button=btn)
-    
+
     def doubleClick(self, btn):
         self.dragging = True
         self.prvButton = btn
@@ -25,10 +26,10 @@ class MouseController:
 
     def mouseReleased(self, btn):
         self.dragging = False
-    
+
     def setPosition(self, x, y):
         self.mouseX = x
         self.mouseY = y
-    
+
     def mouseScroll(self):
         pass

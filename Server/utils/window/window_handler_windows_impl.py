@@ -3,20 +3,9 @@ import tkinter.messagebox
 import os
 
 import win32process
+from utils.window.window_handler import WindowHandler
 
-
-class WindowHandler:
-    def hide_window(self):
-        pass
-
-    def unhide_window(self):
-        pass
-
-    def get_pid(self):
-        return 0
-
-
-class NativeWindow(WindowHandler):
+class NativeWindowWindowsImpl(WindowHandler):
     def __init__(self):
         self.this_pid = os.getpid()
 
