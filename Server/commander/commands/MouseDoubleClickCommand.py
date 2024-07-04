@@ -1,5 +1,5 @@
 from commander.Command import Command
-from commander.receivers.MouseController import MouseController
+from commander.receivers.mouse_controller import MouseController
 
 class MouseDoubleClickCommand(Command):
 
@@ -8,7 +8,7 @@ class MouseDoubleClickCommand(Command):
         self.__mouse = mouse
     
     def execute(self):
-        self.__mouse.doubleClick(self.btn)
+        self.__mouse.double_click(self.btn)
     
     def undo(self):
         pass

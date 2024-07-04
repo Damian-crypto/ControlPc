@@ -1,5 +1,5 @@
 from commander.Command import Command
-from commander.receivers.PowerSupply import PowerSupply
+from commander.receivers.power_supply import PowerSupply
 
 class PowerSupplyShutdownCommand(Command):
 

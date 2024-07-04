@@ -1,5 +1,5 @@
 from commander.Command import Command
-from commander.receivers.KeyboardController import KeyboardController
+from commander.receivers.keyboard_controller import KeyboardController
 
 class KeyReleasedCommand(Command):
 
@@ -11,7 +11,7 @@ class KeyReleasedCommand(Command):
         self.keyCode = keyCode
     
     def execute(self):
-        self.__keyboard.keyReleased(self.keyCode)
+        self.__keyboard.key_released(self.keyCode)
     
     def undo(self):
-        self.__keyboard.keyPressed(self.keyCode)
+        self.__keyboard.key_pressed(self.keyCode)

@@ -1,5 +1,5 @@
 from commander.Command import Command
-from utils.window.WindowManager import WindowManager, WindowHandler
+from utils.window.window_handler_windows_impl import WindowManager, WindowHandler
 
 
 class WindowHideCommand(Command):

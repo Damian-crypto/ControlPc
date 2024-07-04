@@ -6,9 +6,9 @@ class KeyboardController:
     def __init__(self):
         pass
 
-    def keyPressed(self, keyCode):
+    def key_pressed(self, keyCode):
         print('Pressed', keyCode)
         pyautogui.keyDown(keyCode)
 
-    def keyReleased(self, keyCode):
+    def key_released(self, keyCode):
         pyautogui.keyUp(keyCode)
