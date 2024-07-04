@@ -17,8 +17,6 @@ import AuthContext from "../context/AuthContext";
 import ThemeContext from "../context/ThemeContext";
 import { StatusBar } from "expo-status-bar";
 
-const imgLogo = require('../assets/app/icon.png');
-
 const Dashboard = ({ navigation, route }) => {
     const authContext = useContext(AuthContext);
     const themeContext = useContext(ThemeContext);
@@ -39,10 +37,10 @@ const Dashboard = ({ navigation, route }) => {
         })
             .then((response) => response.json())
             .then((data) => {
-                alert(`Power data received: ${data['message']}`);
+                console.log(`Power data received: ${data['message']}`);
             })
             .catch((error) => {
-                alert(`Error occurred with power: ${error}`);
+                console.log(`Error occurred with power: ${error}`);
             });
     }
 
@@ -65,17 +63,17 @@ const Dashboard = ({ navigation, route }) => {
                     <DashboardIcon
                         // label={"Screenshot"}
                         icon={"power"}
-                        onTouch={() => powerMenuActions('shutdown')}
+                        onTouch={() => handlePower('shutdown')}
                     />
                     <DashboardIcon
                         // label={"Sleep"}
                         icon={"moon-outline"}
-                        onTouch={() => powerMenuActions('sleep')}
+                        onTouch={() => handlePower('sleep')}
                     />
                     <DashboardIcon
                         // label={"Sleep"}
                         icon={"refresh"}
-                        onTouch={() => powerMenuActions('restart')}
+                        onTouch={() => handlePower('restart')}
                     />
                 </TouchableOpacity>
             </Modal>
