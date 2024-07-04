@@ -5,6 +5,7 @@ import os
 import win32process
 from utils.window.window_handler import WindowHandler
 
+
 class NativeWindowWindowsImpl(WindowHandler):
     def __init__(self):
         self.this_pid = os.getpid()
