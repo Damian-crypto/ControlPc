@@ -7,7 +7,7 @@ from PySide6.QtGui import QPixmap, QIcon
 from utils.gui import MainWindow
 from utils.configurator.configurator import Configurator
 
-from utils.window.WindowManager import WindowHandler, WindowManager
+from utils.window.window_handler_windows_impl import WindowHandler, WindowManager
 
 # When you run your application, Windows looks at the executable and tries to
 # guess what "application group" it belongs to. By default, any Python scripts

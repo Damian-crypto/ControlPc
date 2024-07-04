@@ -2,8 +2,9 @@ from abc import ABC, abstractmethod
 
 from utils.executor.Result import Result
 
+
 class ProcessExecutable(ABC):
-    
+
     @abstractmethod
     def run(self, cmd: str) -> Result:
         pass
