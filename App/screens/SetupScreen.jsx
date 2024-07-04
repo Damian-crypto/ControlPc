@@ -8,9 +8,12 @@ import {
     ScrollView,
     Modal,
     ActivityIndicator,
-    ImageBackground
+    ImageBackground,
+    Button
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import Collapsible from "react-native-collapsible";
 
 import RoundedButton from "../components/RoundedButton";
 import ClickableImage from "../components/ClickableImage";
@@ -19,7 +22,6 @@ import InputField from "../components/InputField";
 import QRScannerModal from "../components/QRScannerModal";
 import AuthContext from "../context/AuthContext";
 import ThemeContext from "../context/ThemeContext";
-import { StatusBar } from "expo-status-bar";
 
 const SetupScreen = ({ navigation }) => {
     const authContext = useContext(AuthContext);
@@ -207,6 +209,9 @@ const SetupScreen = ({ navigation }) => {
         );
     };
 
+    const [isCollapsedIPRange, setIsCollapsedIPRange] = useState(true);
+    const [isCollapsedHelp, setIsCollapsedHelp] = useState(true);
+
     return (
         <ImageBackground
             style={styles.backgroundImage}
@@ -214,77 +219,106 @@ const SetupScreen = ({ navigation }) => {
             blurRadius={themeContext.blurRadius}
         >
             <View style={styles.backgroundView}>
-                <SafeAreaView style={styles.safeAreaViewContainer}>
-                    <View style={styles.roundedContainer}>
-                        <Text
-                            style={[styles.fontStyle, {
-                                fontSize: 28,
-                            }]}
+                <ScrollView>
+                    <SafeAreaView style={styles.safeAreaViewContainer}>
+                        <TouchableOpacity
+                            style={styles.roundedContainer}
+                            onPress={() => setIsCollapsedIPRange(!isCollapsedIPRange)}
                         >
-                            IPv4 Range:
-                        </Text>
+                            <Text style={{
+                                color: '#FFF',
+                            }}>Configure Manually</Text>
+                        </TouchableOpacity>
+                        <Collapsible collapsed={isCollapsedIPRange}>
+                            <View style={styles.roundedContainer}>
+                                <Text
+                                    style={[styles.fontStyle, {
+                                        fontSize: 28,
+                                    }]}
+                                >
+                                    IPv4 Range:
+                                </Text>
 
-                        <IPScanner />
+                                <IPScanner />
 
-                        <QRScannerModal
-                            visible={showQRScannerModel}
-                            setVisible={setShowQRScannerModel}
-                            setData={(data) => {
-                                const [host, port, id] = data.split(' ');
-                                setUUID(id);
-                                setPort(port);
-                                setMainIPAddress(host);
-                            }}
-                        />
+                                <QRScannerModal
+                                    visible={showQRScannerModel}
+                                    setVisible={setShowQRScannerModel}
+                                    setData={(data) => {
+                                        const [host, port, id] = data.split(' ');
+                                        setUUID(id);
+                                        setPort(port);
+                                        setMainIPAddress(host);
+                                    }}
+                                />
 
-                        <InputField
-                            label={"IP Address (static):"}
-                            placeholder={"192.168.1.200"}
-                            value={mainIPAddress}
-                            onChange={setMainIPAddress}
-                        />
+                                <InputField
+                                    label={"IP Address (static):"}
+                                    placeholder={"192.168.1.200"}
+                                    value={mainIPAddress}
+                                    onChange={setMainIPAddress}
+                                />
 
-                        <RoundedButton
-                            label={"Scan"}
-                            onTouch={() => setShowIPRangeModal(true)}
-                        />
+                                <RoundedButton
+                                    label={"Scan"}
+                                    onTouch={() => setShowIPRangeModal(true)}
+                                />
 
-                        <InputField
-                            label={"Port:"}
-                            placeholder={"5000"}
-                            value={port}
-                            onChange={setPort}
-                        />
-                    </View>
+                                <InputField
+                                    label={"Port:"}
+                                    placeholder={"5000"}
+                                    value={port}
+                                    onChange={setPort}
+                                />
+                            </View>
+                        </Collapsible>
 
-                    <View style={[styles.roundedContainer, { flexDirection: 'row' }]}>
-                        <InputField
-                            label={"Identity:"}
-                            placeholder={"fghDhf3492t"}
-                            value={uuid}
-                            flexGrow={0.8}
-                            onChange={txt => setIdentity(txt)}
-                        />
-                        <ClickableImage
-                            style={{ top: 25, color: '#fff' }}
-                            icon={"qr-code-scanner"}
-                            iconSize={50}
-                            onTouch={() => setShowQRScannerModel(true)}
-                        />
-                    </View>
+                        <TouchableOpacity
+                            style={styles.roundedContainer}
+                            onPress={() => setIsCollapsedHelp(!isCollapsedHelp)}
+                        >
+                            <Text style={{
+                                color: '#FFF',
+                            }}>Show Help</Text>
+                        </TouchableOpacity>
 
-                    <View style={styles.btnContainer}>
-                        <RoundedButton
-                            label={"Connect"}
-                            onTouch={handleConnect} />
-                        <RoundedButton
-                            label={"Test"}
-                            onTouch={handleTest} />
-                        <RoundedButton
-                            label={"Cancel"}
-                            onTouch={() => navigation.navigate("Welcome")} />
-                    </View>
-                </SafeAreaView>
+                        <Collapsible collapsed={isCollapsedHelp}>
+                            <View style={styles.roundedContainer}>
+                                <Text textBreakStrategy="highQuality" style={{ color: '#FFF' }}>
+                                    This application serves as a remote controller for your PC. To use it, you must install the controller application(ControlPc) on your PC. Once installed, open the PC application, which will display a QR code. By scanning this QR code, you can connect your PC to this app.
+                                </Text>
+                            </View>
+                        </Collapsible>
+
+                        <View style={[styles.roundedContainer, { flexDirection: 'row' }]}>
+                            <InputField
+                                label={"Identity:"}
+                                placeholder={"fghDhf3492t"}
+                                value={uuid}
+                                flexGrow={0.8}
+                                onChange={txt => setIdentity(txt)}
+                            />
+                            <ClickableImage
+                                style={{ top: 25, color: '#fff' }}
+                                icon={"qr-code-scanner"}
+                                iconSize={50}
+                                onTouch={() => setShowQRScannerModel(true)}
+                            />
+                        </View>
+
+                        <View style={styles.btnContainer}>
+                            <RoundedButton
+                                label={"Connect"}
+                                onTouch={handleConnect} />
+                            <RoundedButton
+                                label={"Test"}
+                                onTouch={handleTest} />
+                            <RoundedButton
+                                label={"Cancel"}
+                                onTouch={() => navigation.navigate("Welcome")} />
+                        </View>
+                    </SafeAreaView>
+                </ScrollView>
             </View>
             <StatusBar style="dark" />
         </ImageBackground>
@@ -322,7 +356,8 @@ const styles = StyleSheet.create({
         borderColor: '#55555550',
         borderRadius: 10,
         padding: 10,
-        margin: 10,
+        marginHorizontal: 10,
+        marginVertical: 1,
     },
     btnContainer: {
         alignItems: 'center',
