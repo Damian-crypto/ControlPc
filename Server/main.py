@@ -50,15 +50,16 @@ screen_server = MultipartServer()
 
 power_supply = None
 system_config = None
+window_manager = None
 window_handler = None
-env_display = os.environ["DISPLAY"]
+# Windows platform configurations
 if platform.system() == "Windows":
     power_supply = PowerSupplyWindowsImpl()
     system_config = WindowsSystemConfig(configurator)
-    if env_display:
-        window_handler = NativeWindowWindowsImpl()
-if env_display:
-    window_manager = WindowManager(window_handler)
+    window_handler = NativeWindowWindowsImpl()
+
+# Common configurations
+window_manager = WindowManager(window_handler)
 
 invoker = Invoker()
 invoker.setCommand("sleep", PowerSupplySleepCommand(power_supply))
