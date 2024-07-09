@@ -1,4 +1,6 @@
 import sys
+from abc import ABC
+
 from PySide6 import QtWidgets
 from PySide6 import QtCore
 from PySide6.QtWidgets import QTreeWidgetItem, QStyledItemDelegate
@@ -74,7 +76,7 @@ class KeyEditableDelegate(QStyledItemDelegate):
         return super().createEditor(parent, option, index)
 
 
-class MainWindow(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow, WindowHandler):
+class MainWindow(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
     def __init__(self, conf: Configurator):
         super(MainWindow, self).__init__()
         self.setupUi(self)
@@ -131,12 +133,15 @@ class MainWindow(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow, WindowHandler)
     def unhide_window(self):
         self.show()
 
+    def get_pid(self):
+        return 0
+
 
 def start_gui(conf: Configurator, window_manager: WindowManager = None):
     app = QtWidgets.QApplication([])
     app.setWindowIcon(QIcon('static/images/icon.png'))
     window = MainWindow(conf)
-    if window_manager:
-        window_manager.set_window_handler(window)
+    # if window_manager:
+    #     window_manager.set_window_handler(window)
     window.show()
     sys.exit(app.exec())
