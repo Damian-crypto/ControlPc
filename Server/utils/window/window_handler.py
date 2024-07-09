@@ -13,4 +13,4 @@ class WindowHandler(ABC):
 
     @abstractmethod
     def get_pid(self):
-        return 0
+        pass

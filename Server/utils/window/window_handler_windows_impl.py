@@ -37,19 +37,19 @@ class NativeWindowWindowsImpl(WindowHandler):
 class WindowManager:
 
     def __init__(self, window_handler: WindowHandler):
-        self.window = window_handler
+        self.window_handler = window_handler
 
     def set_window_handler(self, window_handler: WindowHandler):
-        self.window = window_handler
+        self.window_handler = window_handler
 
     def get_pid(self):
-        return self.window.get_pid()
+        return self.window_handler.get_pid()
 
     def hide(self):
-        self.window.hide_window()
+        self.window_handler.hide_window()
 
     def unhide(self):
-        self.window.unhide_window()
+        self.window_handler.unhide_window()
 
     @staticmethod
     def show_message_box(message_type: str, title: str, message: str):
