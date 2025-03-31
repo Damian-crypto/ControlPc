@@ -21,27 +21,32 @@ Python 3.7+ is recommended, ControlPc officially tested on Windows 11 and Androi
 
 **3. How to use**
 ### Screen 1
-<img src="https://github.com/Damian-crypto/ControlPc/assets/58256720/c84442ec-dc4f-48bc-be41-99e814ec96a6" width="400px" />
+<img src="https://github.com/user-attachments/assets/0869a269-7196-461b-96a5-62e09ec8ad39" width="300px"/>
 
 Click Continue
 
 ### Screen 2
-<img src="https://github.com/Damian-crypto/ControlPc/assets/58256720/63d5bb6f-6367-4547-8a0a-18bed3566c2a" width="400px" />
+<img src="https://github.com/user-attachments/assets/7514d957-732c-466b-a1ad-65ca3c12192f" width="300px"/>
+
 
 Scan (IP Address)
 
 ### Screen 3
-<img src="https://github.com/Damian-crypto/ControlPc/assets/58256720/ec50b15a-5d5e-4d43-a8c0-5392466f2c1d" width="400px" />
+<img src="https://github.com/user-attachments/assets/c2100d19-a2c1-41cf-b8bb-daab1f7c883a" width="300px"/>
+
 
 1. Start Scan (Your local server)
 2. Scan QR Code (Visible on your pc. When start your local server)
 
 ### Screen 4
-<img src="https://github.com/Damian-crypto/ControlPc/assets/58256720/9cf19c5d-9eab-4be2-ad93-88437d1e562a" width="400px" />
+<img src="https://github.com/user-attachments/assets/f57e5e32-bf7c-49e8-8c0d-2ee7bfb52da5" width="300px"/>
+
 
 You are good to go!
 
 ### Some Screenshots
+<img src="https://github.com/user-attachments/assets/9c3874e2-8a45-4f23-8e6b-8b87a00508d8" width="200px"/>
+<img src="https://github.com/user-attachments/assets/4d1c5536-34a3-4dd2-b2bd-9dd781e06272" width="200px"/>
 <img src="https://github.com/Damian-crypto/ControlPc/assets/58256720/00cc635c-6c9e-4677-938e-2bdf70f363ef" width="200px" />
 <img src="https://github.com/Damian-crypto/ControlPc/assets/58256720/7703d163-c175-4648-9d65-8e436e668a1f" width="200px" />
 <img src="https://github.com/Damian-crypto/ControlPc/assets/58256720/6e02bea8-36ad-4549-9926-86b7caba411c" width="200px" />
